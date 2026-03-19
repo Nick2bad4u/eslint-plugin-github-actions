@@ -140,4 +140,52 @@ describe("workflow metadata rules", () => {
 
         expect(result.messages).toHaveLength(0);
     });
+
+    it("requires explicit types for workflow_dispatch inputs", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: Release",
+                "on:",
+                "  workflow_dispatch:",
+                "    inputs:",
+                "      environment:",
+                "        description: Deployment target",
+                "        required: true",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-dispatch-input-type":
+                        "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(1);
+        expect(result.messages[0]?.ruleId).toBe(
+            "github-actions/require-workflow-dispatch-input-type"
+        );
+    });
+
+    it("accepts explicitly typed workflow_dispatch inputs", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: Release",
+                "on:",
+                "  workflow_dispatch:",
+                "    inputs:",
+                "      environment:",
+                "        description: Deployment target",
+                "        required: true",
+                "        type: environment",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-dispatch-input-type":
+                        "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
 });
