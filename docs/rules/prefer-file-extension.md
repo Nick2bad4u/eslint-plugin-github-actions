@@ -42,6 +42,10 @@ With the default configuration, this rule expects workflow files to use the `.ym
 
 Use this option to enforce `.yaml` instead.
 
+### `{ "caseSensitive": false }`
+
+Use this option when you want extension matching to ignore case differences in repository paths.
+
 ## Further reading
 
 - <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax>

@@ -74,6 +74,44 @@ describe("workflow shape rules", () => {
         );
     });
 
+    it("accepts valid workflow mapping keys across jobs, steps, and services", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+                "jobs:",
+                "  build:",
+                "    name: Build",
+                "    runs-on: ubuntu-latest",
+                "    strategy:",
+                "      fail-fast: true",
+                "      matrix:",
+                "        node: [20]",
+                "    container:",
+                "      image: node:20",
+                "      options: --user 1001",
+                "    services:",
+                "      redis:",
+                "        image: redis:7",
+                "        ports:",
+                "          - 6379:6379",
+                "    steps:",
+                "      - name: Checkout",
+                "        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332",
+                "      - name: Test",
+                "        run: npm test",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/no-invalid-key": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
     it("reports top-level workflow permissions", async () => {
         const result = await lintWorkflow(
             [

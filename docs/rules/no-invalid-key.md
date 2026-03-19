@@ -14,6 +14,8 @@ This rule reports unsupported keys in workflow mappings such as the top-level wo
 
 Misspelled or misplaced workflow keys are easy to overlook in review and can silently break automation intent. Catching them early helps keep workflow files valid and easier to maintain.
 
+This rule focuses on common GitHub Actions workflow structures, including top-level workflow keys, jobs, strategy blocks, containers, services, and individual steps.
+
 ## ❌ Incorrect
 
 ```yaml
@@ -47,6 +49,10 @@ jobs:
       - name: Test
         run: npm test
 ```
+
+## Behavior and migration notes
+
+This rule validates keys in the most common workflow mappings where misspellings usually become hard-to-debug failures. It does not try to validate free-form maps such as `env`, `with`, `outputs`, or `secrets`, where user-defined keys are expected.
 
 ## Further reading
 

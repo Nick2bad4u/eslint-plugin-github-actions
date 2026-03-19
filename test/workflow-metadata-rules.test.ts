@@ -99,4 +99,45 @@ describe("workflow metadata rules", () => {
             "github-actions/prefer-file-extension"
         );
     });
+
+    it("accepts the default preferred workflow extension", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+            ].join("\n"),
+            {
+                filePath: ".github/workflows/test.yml",
+                rules: {
+                    "github-actions/prefer-file-extension": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("supports configuring the preferred workflow extension", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+            ].join("\n"),
+            {
+                filePath: ".github/workflows/test.yaml",
+                rules: {
+                    "github-actions/prefer-file-extension": [
+                        "error",
+                        {
+                            extension: "yaml",
+                        },
+                    ],
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
 });
