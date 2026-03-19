@@ -22,7 +22,7 @@ const maxWorkerCount =
         : 1;
 /** Raw flag controlling optional hanging-process reporter activation. */
 const rawHangingReporterFlag =
-    process.env["TYPEFEST_VITEST_HANGING_PROCESS_REPORTER"] ??
+    process.env["GITHUB_ACTIONS_VITEST_HANGING_PROCESS_REPORTER"] ??
     process.env["VITEST_HANGING_PROCESS_REPORTER"] ??
     "false";
 /** Normalized `true` when hanging-process reporter is explicitly enabled. */
@@ -53,7 +53,7 @@ const typecheckTestFilePatterns = [
 ];
 
 /**
- * Vitest configuration for eslint-plugin-typefest.
+ * Vitest configuration for eslint-plugin-github-actions.
  */
 const vitestConfig: ReturnType<typeof defineConfig> = defineConfig({
     cacheDir: "./.cache/vitest",

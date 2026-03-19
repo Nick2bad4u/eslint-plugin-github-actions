@@ -21,7 +21,7 @@ declare const styles: {
     readonly heroGrid: string;
     readonly heroInlineLink: string;
     readonly heroInlineLinkTsExtras: string;
-    readonly heroInlineLinkTypeFest: string;
+    readonly heroInlineLinkGitHubActions: string;
     readonly heroKicker: string;
     readonly heroLiveBadges: string;
     readonly heroPanel: string;

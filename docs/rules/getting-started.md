@@ -1,74 +1,28 @@
----
-title: Getting Started
-description: Enable eslint-plugin-typefest quickly in Flat Config.
----
+# Getting started
 
-# Getting Started
+## Install
 
-Install the plugin:
-
-```bash
-npm install --save-dev eslint-plugin-typefest typescript
+```sh
+npm install --save-dev eslint eslint-plugin-github-actions
 ```
 
-Enable one preset in your Flat Config:
+## Flat config example
 
-```ts
-import typefest from "eslint-plugin-typefest";
+```js
+import githubActions from "eslint-plugin-github-actions";
 
-export default [
-    typefest.configs.recommended,
-];
+export default [githubActions.configs.recommended];
 ```
 
-`recommended` does not require type information.
+The exported presets already:
 
-If you want the same baseline plus type-aware helper rules, use
-`typefest.configs["recommended-type-checked"]`.
+- scope themselves to `.github/workflows/*.{yml,yaml}`
+- register `yaml-eslint-parser`
+- register the `github-actions` plugin namespace
 
-## Alternative: manual scoped setup
+## Choosing a preset
 
-If you prefer to apply plugin rules inside your own file-scoped config object, spread the preset rules manually.
-
-```ts
-import tsParser from "@typescript-eslint/parser";
-import typefest from "eslint-plugin-typefest";
-
-export default [
-    {
-        files: ["**/*.{ts,tsx,mts,cts}"],
-        languageOptions: {
-            parser: tsParser,
-            parserOptions: {
-                ecmaVersion: "latest",
-                // Enable only when using a type-aware preset.
-                // projectService: true,
-                sourceType: "module",
-            },
-        },
-        plugins: {
-            typefest,
-        },
-        rules: {
-            ...typefest.configs.recommended.rules,
-        },
-    },
-];
-```
-
-Use this pattern when you only extend rules and want full control over parser setup per scope.
-
-## Recommended rollout
-
-1. Start with `recommended` (or `minimal` if you want low initial noise).
-2. Fix violations in small batches.
-3. Move to `recommended-type-checked` when you are ready for typed rules.
-4. Move to `strict` once your baseline is stable.
-5. Use `all` only when you explicitly want every rule, including experimental rules.
-
-## Need a subset instead of a full preset?
-
-- 💠 `typefest.configs["type-fest/types"]`
-- ✴️ `typefest.configs["ts-extras/type-guards"]`
-
-See the **Presets** section in this sidebar for details and examples.
+- Start with `recommended` for most repositories.
+- Add `security` when you want immutable pinning checks.
+- Use `strict` when you want concurrency and stronger operational guardrails.
+- Use `all` to enable every published rule.

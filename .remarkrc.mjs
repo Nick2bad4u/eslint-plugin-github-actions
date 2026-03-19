@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * @file Remark configuration for markdown and MDX linting and formatting.
  *

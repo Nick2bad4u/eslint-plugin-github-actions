@@ -1,0 +1,229 @@
+/**
+ * @packageDocumentation
+ * Shared YAML AST helpers for GitHub Actions workflow rules.
+ */
+import type { Rule } from "eslint";
+import type { AST } from "yaml-eslint-parser";
+
+/** Default workflow globs used by the exported flat configs. */
+export const WORKFLOW_FILE_GLOBS: readonly string[] = [
+    ".github/workflows/*.{yml,yaml}",
+];
+
+/** Workflow job mapping paired with its stable identifier key. */
+export type WorkflowJobEntry = {
+    readonly id: string;
+    readonly idNode: AST.YAMLContent | AST.YAMLWithMeta;
+    readonly mapping: AST.YAMLMapping;
+    readonly pair: AST.YAMLPair;
+};
+
+/** Narrow a YAML node to `YAMLWithMeta`. */
+export const isYamlWithMeta = (
+    node: AST.YAMLNode | AST.YAMLContent | AST.YAMLWithMeta | null | undefined
+): node is AST.YAMLWithMeta => node?.type === "YAMLWithMeta";
+
+/** Unwrap `YAMLWithMeta` wrappers until the underlying YAML value is reached. */
+export const unwrapYamlValue = (
+    node: AST.YAMLContent | AST.YAMLWithMeta | null | undefined
+): AST.YAMLContent | null => {
+    if (node == null) {
+        return null;
+    }
+
+    if (isYamlWithMeta(node)) {
+        return unwrapYamlValue(node.value);
+    }
+
+    return node;
+};
+
+/** Narrow a YAML node to a mapping. */
+export const isYamlMapping = (
+    node: AST.YAMLContent | AST.YAMLWithMeta | null | undefined
+): node is AST.YAMLMapping => unwrapYamlValue(node)?.type === "YAMLMapping";
+
+/** Narrow a YAML node to a sequence. */
+export const isYamlSequence = (
+    node: AST.YAMLContent | AST.YAMLWithMeta | null | undefined
+): node is AST.YAMLSequence => unwrapYamlValue(node)?.type === "YAMLSequence";
+
+/** Narrow a YAML node to a scalar. */
+export const isYamlScalar = (
+    node: AST.YAMLContent | AST.YAMLWithMeta | null | undefined
+): node is AST.YAMLScalar => unwrapYamlValue(node)?.type === "YAMLScalar";
+
+/** Resolve the first document's root mapping when linting a workflow file. */
+export const getWorkflowRoot = (
+    context: Rule.RuleContext
+): AST.YAMLMapping | null => {
+    const program = context.sourceCode.ast as unknown as AST.YAMLProgram;
+    const [document] = program.body;
+    const rootNode = unwrapYamlValue(document?.content ?? null);
+
+    return rootNode?.type === "YAMLMapping" ? rootNode : null;
+};
+
+/** Read a scalar node as a string when possible. */
+export const getScalarStringValue = (
+    node: AST.YAMLContent | AST.YAMLWithMeta | null | undefined
+): string | null => {
+    const unwrappedNode = unwrapYamlValue(node);
+
+    if (unwrappedNode?.type !== "YAMLScalar") {
+        return null;
+    }
+
+    if (typeof unwrappedNode.value === "string") {
+        return unwrappedNode.value;
+    }
+
+    return "strValue" in unwrappedNode &&
+        typeof unwrappedNode.strValue === "string"
+        ? unwrappedNode.strValue
+        : null;
+};
+
+/** Read a scalar node as a number when possible. */
+export const getScalarNumberValue = (
+    node: AST.YAMLContent | AST.YAMLWithMeta | null | undefined
+): number | null => {
+    const unwrappedNode = unwrapYamlValue(node);
+
+    if (unwrappedNode?.type !== "YAMLScalar") {
+        return null;
+    }
+
+    return typeof unwrappedNode.value === "number" ? unwrappedNode.value : null;
+};
+
+/** Determine whether a scalar is a GitHub expression string like `${{ ... }}`. */
+export const isGithubExpressionScalar = (
+    node: AST.YAMLContent | AST.YAMLWithMeta | null | undefined
+): boolean => {
+    const scalarValue = getScalarStringValue(node);
+
+    return (
+        scalarValue !== null &&
+        scalarValue.trimStart().startsWith("${{") &&
+        scalarValue.trimEnd().endsWith("}}")
+    );
+};
+
+/** Find a mapping pair by its exact scalar key. */
+export const getMappingPair = (
+    mapping: AST.YAMLMapping,
+    key: string
+): AST.YAMLPair | null => {
+    for (const pair of mapping.pairs) {
+        if (getScalarStringValue(pair.key) === key) {
+            return pair;
+        }
+    }
+
+    return null;
+};
+
+/** Resolve a mapping child by key, ensuring the value is a mapping. */
+export const getMappingValueAsMapping = (
+    mapping: AST.YAMLMapping,
+    key: string
+): AST.YAMLMapping | null => {
+    const pair = getMappingPair(mapping, key);
+    const valueNode = unwrapYamlValue(pair?.value ?? null);
+
+    return valueNode?.type === "YAMLMapping" ? valueNode : null;
+};
+
+/** Resolve a mapping child by key, ensuring the value is a sequence. */
+export const getMappingValueAsSequence = (
+    mapping: AST.YAMLMapping,
+    key: string
+): AST.YAMLSequence | null => {
+    const pair = getMappingPair(mapping, key);
+    const valueNode = unwrapYamlValue(pair?.value ?? null);
+
+    return valueNode?.type === "YAMLSequence" ? valueNode : null;
+};
+
+/** Enumerate workflow jobs under `jobs`. */
+export const getWorkflowJobs = (
+    root: AST.YAMLMapping
+): readonly WorkflowJobEntry[] => {
+    const jobsMapping = getMappingValueAsMapping(root, "jobs");
+
+    if (jobsMapping == null) {
+        return [];
+    }
+
+    const jobs: WorkflowJobEntry[] = [];
+
+    for (const pair of jobsMapping.pairs) {
+        const jobId = getScalarStringValue(pair.key);
+        const jobMapping = unwrapYamlValue(pair.value);
+
+        if (jobId === null || jobMapping?.type !== "YAMLMapping") {
+            continue;
+        }
+
+        if (pair.key == null) {
+            continue;
+        }
+
+        jobs.push({
+            id: jobId,
+            idNode: pair.key,
+            mapping: jobMapping,
+            pair,
+        });
+    }
+
+    return jobs;
+};
+
+/** Collect the workflow event names declared under `on`. */
+export const getWorkflowEventNames = (
+    root: AST.YAMLMapping
+): ReadonlySet<string> => {
+    const onPair = getMappingPair(root, "on");
+    const onValue = unwrapYamlValue(onPair?.value ?? null);
+    const eventNames = new Set<string>();
+
+    if (onValue == null) {
+        return eventNames;
+    }
+
+    if (onValue.type === "YAMLScalar") {
+        const eventName = getScalarStringValue(onValue);
+
+        if (eventName !== null) {
+            eventNames.add(eventName);
+        }
+
+        return eventNames;
+    }
+
+    if (onValue.type === "YAMLSequence") {
+        for (const entry of onValue.entries) {
+            const eventName = getScalarStringValue(entry);
+
+            if (eventName !== null) {
+                eventNames.add(eventName);
+            }
+        }
+
+        return eventNames;
+    }
+
+    if (onValue.type === "YAMLMapping") {
+        for (const pair of onValue.pairs) {
+            const eventName = getScalarStringValue(pair.key);
+
+            if (eventName !== null) {
+                eventNames.add(eventName);
+            }
+        }
+    }
+
+    return eventNames;
+};

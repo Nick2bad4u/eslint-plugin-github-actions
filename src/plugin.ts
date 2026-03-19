@@ -1,93 +1,63 @@
 /**
  * @packageDocumentation
- * Public plugin entrypoint for eslint-plugin-typefest exports and preset wiring.
+ * Public plugin entrypoint for eslint-plugin-github-actions.
  */
-import type { ESLint, Linter } from "eslint";
-import type { Except } from "type-fest";
-
-import typeScriptParser from "@typescript-eslint/parser";
-import {
-    isDefined,
-    isEmpty,
-    objectEntries,
-    objectHasIn,
-    safeCastTo,
-    setHas,
-} from "ts-extras";
+import type { ESLint, Linter, Rule } from "eslint";
+import * as yamlParser from "yaml-eslint-parser";
 
 import packageJson from "../package.json" with { type: "json" };
 import {
-    deriveRuleDocsMetadataByName,
-    deriveRulePresetMembershipByRuleName,
-    deriveTypeCheckedRuleNameSet,
-} from "./_internal/rule-docs-metadata.js";
-import { typefestRules } from "./_internal/rules-registry.js";
-import {
-    type TypefestConfigName as InternalTypefestConfigName,
-    typefestConfigMetadataByName,
-    typefestConfigNames,
-} from "./_internal/typefest-config-references.js";
+    githubActionsConfigMetadataByName,
+    githubActionsConfigNames,
+    githubActionsConfigReferenceToName,
+    type GithubActionsConfigName,
+    type GithubActionsConfigReference,
+} from "./_internal/github-actions-config-references.js";
+import type { GithubActionsRuleDocs } from "./_internal/rule-docs.js";
+import { githubActionsRules } from "./_internal/rules-registry.js";
+import { WORKFLOW_FILE_GLOBS } from "./_internal/workflow-yaml.js";
 
 /** ESLint severity used by generated preset rule maps. */
 const ERROR_SEVERITY = "error" as const;
 
-/** Default file globs targeted by plugin presets when `files` is omitted. */
-const TYPE_SCRIPT_FILES = ["**/*.{ts,tsx,mts,cts}"] as const;
-
-/**
- * Canonical flat-config preset keys exposed through `plugin.configs`.
- *
- * @remarks
- * These names are used by consumers when composing presets in ESLint flat
- * config arrays.
- */
-export type TypefestConfigName = InternalTypefestConfigName;
-
-/**
- * Flat-config preset shape produced by this plugin.
- *
- * @remarks
- * The `rules` map is required so preset composition can always merge concrete
- * rule severity entries without additional null checks.
- */
-export type TypefestPresetConfig = Linter.Config & {
+/** Flat config shape produced by this plugin. */
+export type GithubActionsPresetConfig = Linter.Config & {
     rules: NonNullable<Linter.Config["rules"]>;
 };
 
-/** Internal alias for flat config objects handled by preset builders. */
-type FlatConfig = Linter.Config;
+/** Rule-map type used when expanding preset memberships. */
+type RulesConfig = GithubActionsPresetConfig["rules"];
 
-/** Normalized language-options shape for preset composition helpers. */
-type FlatLanguageOptions = NonNullable<FlatConfig["languageOptions"]>;
-
-/** Normalized parser-options shape for preset composition helpers. */
-type FlatParserOptions = NonNullable<FlatLanguageOptions["parserOptions"]>;
-
-/** Rule-map type used by preset rule-list expansion helpers. */
-type RulesConfig = TypefestPresetConfig["rules"];
-
-/** Contract for the `configs` object exported by this plugin. */
-type TypefestConfigsContract = Record<TypefestConfigName, TypefestPresetConfig>;
+/** Contract for the `configs` object exported by the plugin. */
+type GithubActionsConfigsContract = Record<
+    GithubActionsConfigName,
+    GithubActionsPresetConfig
+>;
 
 /** Fully assembled plugin contract used by the runtime default export. */
-type TypefestPluginContract = Except<ESLint.Plugin, "configs" | "rules"> & {
-    configs: TypefestConfigsContract;
+type GithubActionsPluginContract = Omit<
+    ESLint.Plugin,
+    "configs" | "meta" | "rules"
+> & {
+    configs: GithubActionsConfigsContract;
     meta: {
         name: string;
         namespace: string;
         version: string;
     };
-    processors: NonNullable<ESLint.Plugin["processors"]>;
     rules: NonNullable<ESLint.Plugin["rules"]>;
 };
 
-/**
- * Resolve package version from package.json data.
- *
- * @param pkg - Parsed package metadata value.
- *
- * @returns The package version, or `0.0.0` when unavailable.
- */
+/** Unqualified rule names supported by eslint-plugin-github-actions. */
+export type GithubActionsRuleName = keyof typeof githubActionsRules;
+
+/** Fully-qualified ESLint rule ids exposed by this plugin. */
+export type GithubActionsRuleId = `github-actions/${GithubActionsRuleName}`;
+
+/** Runtime type for the plugin's generated config presets. */
+export type GithubActionsConfigs = GithubActionsConfigsContract;
+
+/** Resolve package version from package.json data. */
 function getPackageVersion(pkg: unknown): string {
     if (typeof pkg !== "object" || pkg === null) {
         return "0.0.0";
@@ -98,304 +68,174 @@ function getPackageVersion(pkg: unknown): string {
     return typeof version === "string" ? version : "0.0.0";
 }
 
-/** Package metadata used to populate plugin runtime `meta.version`. */
-const packageJsonValue = safeCastTo<unknown>(packageJson);
+/** Determine whether a string is a valid config-reference token. */
+const isGithubActionsConfigReference = (
+    value: string
+): value is GithubActionsConfigReference =>
+    Object.hasOwn(githubActionsConfigReferenceToName, value);
 
-/** Parser module reused across preset construction. */
-const typeScriptParserValue: FlatLanguageOptions["parser"] = typeScriptParser;
+/** Normalize stored rule docs config references to a validated string array. */
+const getRuleConfigReferences = (
+    ruleName: GithubActionsRuleName,
+    rule: Rule.RuleModule
+): readonly GithubActionsConfigReference[] => {
+    const docs = rule.meta?.docs as GithubActionsRuleDocs | undefined;
+    const references = docs?.configs;
+    const referenceList = Array.isArray(references) ? references : [references];
 
-/** Default parser options applied when a preset omits parser options. */
-const defaultParserOptions = {
-    ecmaVersion: "latest",
-    sourceType: "module",
-} satisfies FlatParserOptions;
-
-/**
- * Normalize unknown parser options into a mutable parser-options object.
- */
-const normalizeParserOptions = (
-    parserOptions: FlatLanguageOptions["parserOptions"]
-): FlatParserOptions =>
-    parserOptions !== null &&
-    typeof parserOptions === "object" &&
-    !Array.isArray(parserOptions)
-        ? { ...parserOptions }
-        : { ...defaultParserOptions };
-
-/**
- * Fully-qualified ESLint rule id used by this plugin.
- *
- * @remarks
- * Consumers typically use this when building strongly typed rule maps or helper
- * utilities that require namespaced rule identifiers.
- */
-export type TypefestRuleId = `typefest/${TypefestRuleName}`;
-
-/** Unqualified rule name supported by `eslint-plugin-typefest`. */
-export type TypefestRuleName = keyof typeof typefestRules;
-
-/**
- * ESLint-compatible rule map view of the strongly typed internal rule record.
- */
-const typefestEslintRules: NonNullable<ESLint.Plugin["rules"]> &
-    typeof typefestRules = typefestRules as NonNullable<
-    ESLint.Plugin["rules"]
-> &
-    typeof typefestRules;
-
-const isTypefestRuleName = (value: string): value is TypefestRuleName =>
-    objectHasIn(typefestRules, value);
-
-const typefestRuleEntries: readonly (readonly [
-    TypefestRuleName,
-    (typeof typefestRules)[TypefestRuleName],
-])[] = (() => {
-    const entries: (readonly [
-        TypefestRuleName,
-        (typeof typefestRules)[TypefestRuleName],
-    ])[] = [];
-
-    for (const [ruleName] of objectEntries(typefestRules)) {
-        if (!isTypefestRuleName(ruleName)) {
-            continue;
-        }
-
-        const ruleDefinition = typefestRules[ruleName];
-
-        if (ruleDefinition === undefined) {
-            continue;
-        }
-
-        entries.push([ruleName, ruleDefinition]);
+    if (referenceList.length === 0 || referenceList[0] === undefined) {
+        throw new TypeError(
+            `Rule '${ruleName}' is missing docs.configs preset metadata.`
+        );
     }
 
-    return entries;
-})();
-
-const ruleDocsMetadataByRuleName = deriveRuleDocsMetadataByName(typefestRules);
-const rulePresetMembership = deriveRulePresetMembershipByRuleName(
-    ruleDocsMetadataByRuleName
-);
-const typeCheckedRuleNames = deriveTypeCheckedRuleNameSet(
-    ruleDocsMetadataByRuleName
-);
-
-const createEmptyPresetRuleMap = (): Record<
-    TypefestConfigName,
-    TypefestRuleName[]
-> => {
-    const presetRuleMap = {} as Record<TypefestConfigName, TypefestRuleName[]>;
-
-    for (const configName of typefestConfigNames) {
-        presetRuleMap[configName] = [];
-    }
-
-    return presetRuleMap;
-};
-
-const dedupeRuleNames = (
-    ruleNames: readonly TypefestRuleName[]
-): TypefestRuleName[] => [...new Set(ruleNames)];
-
-const derivePresetRuleNamesByConfig = (): Readonly<
-    Record<TypefestConfigName, readonly TypefestRuleName[]>
-> => {
-    const presetRuleNamesByConfig = createEmptyPresetRuleMap();
-
-    for (const [ruleName] of typefestRuleEntries) {
-        const configNames = rulePresetMembership[ruleName];
-
-        if (!isDefined(configNames) || isEmpty(configNames)) {
+    for (const reference of referenceList) {
+        if (
+            typeof reference !== "string" ||
+            !isGithubActionsConfigReference(reference)
+        ) {
             throw new TypeError(
-                `Rule '${ruleName}' is missing preset membership metadata.`
+                `Rule '${ruleName}' has an invalid config reference '${String(reference)}'.`
             );
         }
+    }
 
-        for (const configName of configNames) {
+    return referenceList;
+};
+
+/** Strongly typed ESLint rule view of the internal registry. */
+const githubActionsEslintRules: NonNullable<ESLint.Plugin["rules"]> &
+    typeof githubActionsRules = githubActionsRules as NonNullable<
+    ESLint.Plugin["rules"]
+> &
+    typeof githubActionsRules;
+
+/** Stable rule-entry list used by config derivation and docs tests. */
+const githubActionsRuleEntries: readonly (readonly [
+    GithubActionsRuleName,
+    Rule.RuleModule,
+])[] = Object.entries(githubActionsRules) as readonly (readonly [
+    GithubActionsRuleName,
+    Rule.RuleModule,
+])[];
+
+/** Build a config-to-rule-name map from rule docs metadata. */
+const createPresetRuleNamesByConfig = (): Record<
+    GithubActionsConfigName,
+    GithubActionsRuleName[]
+> => {
+    const presetRuleNamesByConfig: Record<
+        GithubActionsConfigName,
+        GithubActionsRuleName[]
+    > = {
+        all: [],
+        recommended: [],
+        security: [],
+        strict: [],
+    };
+
+    for (const [ruleName, rule] of githubActionsRuleEntries) {
+        for (const reference of getRuleConfigReferences(ruleName, rule)) {
+            const configName = githubActionsConfigReferenceToName[
+                reference
+            ] as GithubActionsConfigName;
+
             presetRuleNamesByConfig[configName].push(ruleName);
         }
     }
 
-    return {
-        all: dedupeRuleNames(presetRuleNamesByConfig.all),
-        minimal: dedupeRuleNames(presetRuleNamesByConfig.minimal),
-        recommended: dedupeRuleNames(presetRuleNamesByConfig.recommended),
-        "recommended-type-checked": dedupeRuleNames(
-            presetRuleNamesByConfig["recommended-type-checked"]
-        ),
-        strict: dedupeRuleNames(presetRuleNamesByConfig.strict),
-        "ts-extras/type-guards": dedupeRuleNames(
-            presetRuleNamesByConfig["ts-extras/type-guards"]
-        ),
-        "type-fest/types": dedupeRuleNames(
-            presetRuleNamesByConfig["type-fest/types"]
-        ),
-    };
+    return presetRuleNamesByConfig;
 };
 
-/**
- * Build an ESLint rules map that enables each provided rule at error level.
- *
- * @param ruleNames - Rule names to enable.
- *
- * @returns Rules config object compatible with flat config.
- */
-function errorRulesFor(ruleNames: readonly TypefestRuleName[]): RulesConfig {
+/** Effective rule membership for every exported config preset. */
+const presetRuleNamesByConfig: Readonly<
+    Record<GithubActionsConfigName, readonly GithubActionsRuleName[]>
+> = createPresetRuleNamesByConfig();
+
+/** Build an ESLint rules map that enables each provided rule at error level. */
+function errorRulesFor(
+    ruleNames: readonly GithubActionsRuleName[]
+): RulesConfig {
     const rules: RulesConfig = {};
 
     for (const ruleName of ruleNames) {
-        rules[`typefest/${ruleName}`] = ERROR_SEVERITY;
+        rules[`github-actions/${ruleName}`] = ERROR_SEVERITY;
     }
 
     return rules;
 }
 
-/**
- * Remove duplicates while preserving first-seen ordering.
- *
- * @param ruleNames - Candidate rule list.
- *
- * @returns Deduplicated rule list.
- */
-const presetRuleNamesByConfig = derivePresetRuleNamesByConfig();
-
-/** Recommended preset rule list for zero-type-info usage. */
-const recommendedRuleNames: TypefestRuleName[] = [];
-
-for (const ruleName of presetRuleNamesByConfig.recommended) {
-    if (setHas(typeCheckedRuleNames, ruleName)) {
-        continue;
-    }
-
-    recommendedRuleNames.push(ruleName);
-}
-
-/** Type-aware recommended preset rule list. */
-const recommendedTypeCheckedRuleNames = dedupeRuleNames([
-    ...recommendedRuleNames,
-    ...presetRuleNamesByConfig["recommended-type-checked"],
-]);
-
-/** Effective per-preset rule lists after applying derived policy overlays. */
-const effectivePresetRuleNamesByConfig: Readonly<
-    Record<TypefestConfigName, readonly TypefestRuleName[]>
-> = {
-    ...presetRuleNamesByConfig,
-    recommended: recommendedRuleNames,
-    "recommended-type-checked": recommendedTypeCheckedRuleNames,
-};
-
-/**
- * Apply parser and plugin metadata required by all plugin presets.
- *
- * @param config - Preset-specific config fragment.
- * @param plugin - Plugin object registered under the `typefest` namespace.
- * @param options - Preset-level wiring options.
- *
- * @returns Normalized preset config.
- */
-function withTypefestPlugin(
-    config: Readonly<TypefestPresetConfig>,
-    plugin: Readonly<ESLint.Plugin>,
-    options: Readonly<{ requiresTypeChecking: boolean }>
-): TypefestPresetConfig {
+/** Apply YAML parser and plugin registration to a preset config fragment. */
+function withGithubActionsPlugin(
+    config: Readonly<GithubActionsPresetConfig>,
+    plugin: Readonly<ESLint.Plugin>
+): GithubActionsPresetConfig {
     const existingLanguageOptions = config.languageOptions ?? {};
     const existingParserOptions = existingLanguageOptions["parserOptions"];
-    const parserOptions = normalizeParserOptions(existingParserOptions);
-
-    if (
-        options.requiresTypeChecking &&
-        !objectHasIn(parserOptions, "projectService")
-    ) {
-        Reflect.set(parserOptions, "projectService", true);
-    }
-
-    const languageOptions: FlatLanguageOptions = {
-        ...existingLanguageOptions,
-        parser: existingLanguageOptions["parser"] ?? typeScriptParserValue,
-        parserOptions,
-    };
 
     return {
         ...config,
-        files: config.files ?? [...TYPE_SCRIPT_FILES],
-        languageOptions,
+        files: config.files ?? [...WORKFLOW_FILE_GLOBS],
+        languageOptions: {
+            ...existingLanguageOptions,
+            parser: existingLanguageOptions["parser"] ?? yamlParser,
+            parserOptions:
+                existingParserOptions !== null &&
+                typeof existingParserOptions === "object" &&
+                !Array.isArray(existingParserOptions)
+                    ? { ...existingParserOptions }
+                    : {},
+        },
         plugins: {
             ...config.plugins,
-            typefest: plugin,
+            "github-actions": plugin,
         },
     };
 }
 
-/** Minimal plugin object used when assembling flat-config presets. */
+/** Minimal plugin view used while assembling exported presets. */
 const pluginForConfigs: ESLint.Plugin = {
-    rules: typefestEslintRules,
+    rules: githubActionsEslintRules,
 };
 
-/**
- * Flat config presets distributed by eslint-plugin-typefest.
- */
-const createTypefestConfigsDefinition = (): TypefestConfigsContract => {
-    const configs = {} as TypefestConfigsContract;
+/** Create every exported flat-config preset from static metadata. */
+const createGithubActionsConfigsDefinition =
+    (): GithubActionsConfigsContract => {
+        const configs = {} as GithubActionsConfigsContract;
 
-    for (const configName of typefestConfigNames) {
-        const configMetadata = typefestConfigMetadataByName[configName];
+        for (const configName of githubActionsConfigNames) {
+            const metadata = githubActionsConfigMetadataByName[configName];
 
-        configs[configName] = withTypefestPlugin(
-            {
-                name: configMetadata.presetName,
-                rules: errorRulesFor(
-                    effectivePresetRuleNamesByConfig[configName]
-                ),
-            },
-            pluginForConfigs,
-            {
-                requiresTypeChecking: configMetadata.requiresTypeChecking,
-            }
-        );
-    }
+            configs[configName] = withGithubActionsPlugin(
+                {
+                    name: metadata.presetName,
+                    rules: errorRulesFor(presetRuleNamesByConfig[configName]),
+                },
+                pluginForConfigs
+            );
+        }
 
-    return configs;
-};
+        return configs;
+    };
 
-const typefestConfigsDefinition = createTypefestConfigsDefinition();
+/** Finalized typed view of all exported flat-config presets. */
+const githubActionsConfigs: GithubActionsConfigsContract =
+    createGithubActionsConfigsDefinition();
 
-/** Finalized typed view of all exported preset configurations. */
-const typefestConfigs: TypefestConfigsContract = typefestConfigsDefinition;
-
-/**
- * Runtime type for the plugin's generated config presets.
- *
- * @remarks
- * Mirrors `plugin.configs` and is useful when composing typed preset-aware
- * tooling in external integrations.
- */
-export type TypefestConfigs = typeof typefestConfigs;
-
-/**
- * Main plugin object exported for ESLint consumption.
- */
-const typefestPlugin: TypefestPluginContract = {
-    configs: typefestConfigs,
+/** Main plugin object exported for ESLint consumption. */
+const githubActionsPlugin: GithubActionsPluginContract = {
+    configs: githubActionsConfigs,
     meta: {
-        name: "eslint-plugin-typefest",
-        namespace: "typefest",
-        version: getPackageVersion(packageJsonValue),
+        name: "eslint-plugin-github-actions",
+        namespace: "github-actions",
+        version: getPackageVersion(packageJson),
     },
     processors: {},
-    rules: typefestEslintRules,
+    rules: githubActionsEslintRules,
 };
 
-/**
- * Runtime type for the plugin object exported as default.
- *
- * @remarks
- * Includes resolved `meta`, `rules`, and `configs` contracts after plugin
- * assembly.
- */
-export type TypefestPlugin = typeof typefestPlugin;
+/** Runtime type for the plugin object exported as default. */
+export type GithubActionsPlugin = typeof githubActionsPlugin;
 
-/**
- * Default plugin export consumed by ESLint flat config.
- */
-export default typefestPlugin;
+/** Default plugin export consumed by ESLint flat config. */
+export default githubActionsPlugin;

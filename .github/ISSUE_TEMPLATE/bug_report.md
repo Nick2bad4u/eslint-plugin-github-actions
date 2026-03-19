@@ -1,61 +1,29 @@
 ---
 name: Bug report
-about: Report a reproducible bug in eslint-plugin-typefest
-title: "Bug: "
-labels:
-    - bug
-    - triage
+about: Report a reproducible bug in eslint-plugin-github-actions
+title: "[Bug]: "
+labels: [bug]
 assignees: []
 ---
 
 ## Summary
 
-<!-- Briefly describe the bug and impact. -->
-
-## Rule / Area
-
-<!-- Example: prefer-ts-extras-array-find, docs/docusaurus, presets, runtime API docs -->
+Describe the bug clearly.
 
 ## Reproduction
 
-### Flat config snippet
-
-```mjs
-// Minimal eslint.config.mjs (or relevant excerpt)
-```
-
-### Minimal code sample
-
-```ts
-// Minimal reproducible input
-```
-
-### Command and output
-
-```bash
-# Example: npm run test -- test/prefer-ts-extras-array-find.test.ts
-```
-
-## Steps to reproduce
-
-1.
-2.
-3.
+Provide the smallest workflow or config snippet that reproduces the problem.
 
 ## Expected behavior
 
-## Actual behavior
+Describe what you expected to happen.
 
 ## Environment
 
-- Node.js version:
-- npm version:
+- `eslint-plugin-github-actions` version/commit:
 - ESLint version:
-- TypeScript version:
-- `@typescript-eslint/*` version:
-- `eslint-plugin-typefest` version/commit:
-- OS:
+- Node.js version:
 
 ## Additional context
 
-<!-- Add logs, screenshots, benchmark numbers, or related issues/PRs if helpful. -->
+Add logs, screenshots, or related links if they help explain the issue.

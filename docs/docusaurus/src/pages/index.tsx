@@ -2,15 +2,9 @@ import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import Layout from "@theme/Layout";
 import Heading from "@theme/Heading";
+
 import GitHubStats from "../components/GitHubStats";
-
 import styles from "./index.module.css";
-
-type HeroBadge = {
-    readonly description: string;
-    readonly icon: string;
-    readonly label: string;
-};
 
 type HeroStat = {
     readonly description: string;
@@ -24,177 +18,88 @@ type HomeCard = {
     readonly to: string;
 };
 
-/**
- * Hero badges Note: These icons are from the "Nerd Font Symbols" font.
- *
- * @see https://www.nerdfonts.com/cheat-sheet for available icons in the "Nerd Font Symbols" font
- */
-const heroBadges = [
-    {
-        description: "Drop-in config for ESLint v9+ and modern repos.",
-        icon: "\uf013",
-        label: "Flat Config native",
-    },
-    {
-        description: "Type-aware guidance without sacrificing readability.",
-        icon: "\ue628",
-        label: "TypeScript-first",
-    },
-    {
-        description: "Clear diagnostics with safe autofixes and suggestions.",
-        icon: "\uf0ad",
-        label: "Actionable rule docs",
-    },
-] as const satisfies readonly HeroBadge[];
-
-/**
- * Hero stats Note: These icons are from the "Nerd Font Symbols" font.
- *
- * @see https://www.nerdfonts.com/cheat-sheet for available icons in the "Nerd Font Symbols" font
- */
 const heroStats = [
     {
-        description: "Type-safe patterns from type-fest and ts-extras.",
-        headline: "\uf0ca 70+ Rules",
+        description: "Workflow security and quality checks for GitHub Actions YAML.",
+        headline: "4 Initial Rules",
     },
     {
-        description: "Start small, then scale to stricter coverage.",
-        headline: "\ue690 6 Presets",
+        description: "Balanced, security-focused, strict, and all-in presets.",
+        headline: "4 Presets",
     },
     {
-        description: "Safe rewrites where semantics are preserved.",
-        headline: "\udb80\udc68 DX-first Autofix & Suggestions",
+        description: "Purpose-built for .github/workflows/*.yml and *.yaml files.",
+        headline: "YAML-first",
     },
 ] as const satisfies readonly HeroStat[];
 
-/**
- * Button icons Note: These icons are from the "Nerd Font Symbols" font.
- *
- * @see https://www.nerdfonts.com/cheat-sheet for available icons in the "Nerd Font Symbols" font
- */
-const overviewButtonIcon = "\udb81\udf1d";
-const comparePresetsButtonIcon = "\udb85\udc92";
-const heroKickerIcon = "\uf0ad";
-const heroKickerIcon2 = "\uf135";
-
-/**
- * Home card icons Note: These icons are from the "Nerd Font Symbols" font,
- * which is included in the site styles. If you change these icons, make sure to
- * choose ones that exist in that font or adjust the font-family in the CSS
- * accordingly.
- *
- * @see https://www.nerdfonts.com/cheat-sheet for available icons in the "Nerd Font Symbols" font
- */
 const homeCards = [
     {
-        icon: "\uf135",
-        title: "Get Started",
-        description:
-            "Install the plugin, enable a preset, and start enforcing type-safe ts-extras and type-fest patterns.",
+        description: "Install the plugin, enable a preset, and lint workflow files immediately.",
+        icon: "⚙️",
+        title: "Get started",
         to: "/docs/rules/getting-started",
     },
     {
-        icon: "\ue690",
-        title: "Presets",
-        description:
-            "Choose the right preset for your team, from minimal baseline to full strict coverage.",
-        to: "/docs/rules/presets",
+        description: "Compare recommended, security, strict, and all presets.",
+        icon: "🧭",
+        title: "Choose a preset",
+        to: "/docs/rules/presets/index",
     },
     {
-        icon: "\uf02d",
-        title: "Rule Reference",
-        description:
-            "Browse every rule with concrete incorrect/correct examples and migration guidance.",
-        to: "/docs/rules",
+        description: "Read the individual rule docs with incorrect and correct examples.",
+        icon: "📚",
+        title: "Browse rules",
+        to: "/docs/rules/overview",
     },
 ] as const satisfies readonly HomeCard[];
 
+/** Render the Docusaurus landing page for eslint-plugin-github-actions. */
 export default function Home() {
     const logoSrc = useBaseUrl("/img/logo.svg");
 
     return (
         <Layout
-            title="eslint-plugin-typefest docs"
-            description="Documentation for eslint-plugin-typefest"
+            title="eslint-plugin-github-actions docs"
+            description="Documentation for eslint-plugin-github-actions"
         >
             <header className={styles.heroBanner}>
                 <div className={`container ${styles.heroContent}`}>
                     <div className={styles.heroGrid}>
                         <div>
                             <p className={styles.heroKicker}>
-                                {`${heroKickerIcon} ESLint plugin for modern TypeScript teams ${heroKickerIcon2}`}
+                                GitHub Actions workflow linting for quality,
+                                reliability, and security.
                             </p>
                             <Heading as="h1" className={styles.heroTitle}>
-                                eslint-plugin-typefest
+                                eslint-plugin-github-actions
                             </Heading>
                             <p className={styles.heroSubtitle}>
-                                ESLint rules that recommend safer, clearer
-                                TypeScript types, type guards, and other
-                                patterns by utilizing{" "}
-                                <Link
-                                    className={`${styles.heroInlineLink} ${styles.heroInlineLinkTypeFest}`}
-                                    href="https://github.com/sindresorhus/type-fest"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    type-fest
-                                </Link>{" "}
-                                and{" "}
-                                <Link
-                                    className={`${styles.heroInlineLink} ${styles.heroInlineLinkTsExtras}`}
-                                    href="https://github.com/sindresorhus/ts-extras"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    ts-extras
-                                </Link>
+                                Focused ESLint rules for workflow YAML files,
+                                including explicit permissions, job timeout
+                                enforcement, immutable SHA pinning, and
+                                workflow concurrency guidance.
                             </p>
-
-                            <div className={styles.heroBadgeRow}>
-                                {heroBadges.map((badge) => (
-                                    <article
-                                        key={badge.label}
-                                        className={styles.heroBadge}
-                                    >
-                                        <p className={styles.heroBadgeLabel}>
-                                            <span
-                                                aria-hidden="true"
-                                                className={styles.heroBadgeIcon}
-                                            >
-                                                {badge.icon}
-                                            </span>
-                                            {badge.label}
-                                        </p>
-                                        <p
-                                            className={
-                                                styles.heroBadgeDescription
-                                            }
-                                        >
-                                            {badge.description}
-                                        </p>
-                                    </article>
-                                ))}
-                            </div>
 
                             <div className={styles.heroActions}>
                                 <Link
                                     className={`button button--lg ${styles.heroActionButton} ${styles.heroActionPrimary}`}
-                                    to="/docs/rules/overview"
+                                    to="/docs/rules/getting-started"
                                 >
-                                    {overviewButtonIcon} Start with Overview
+                                    Start here
                                 </Link>
                                 <Link
                                     className={`button button--lg ${styles.heroActionButton} ${styles.heroActionSecondary}`}
-                                    to="/docs/rules/presets"
+                                    to="/docs/rules/overview"
                                 >
-                                    {comparePresetsButtonIcon} Compare Presets
+                                    View rules
                                 </Link>
                             </div>
                         </div>
 
                         <aside className={styles.heroPanel}>
                             <img
-                                alt="eslint-plugin-typefest logo"
+                                alt="eslint-plugin-github-actions logo"
                                 className={styles.heroPanelLogo}
                                 decoding="async"
                                 height="240"

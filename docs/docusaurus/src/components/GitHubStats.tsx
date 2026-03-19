@@ -15,48 +15,27 @@ type LiveBadge = {
 const liveBadges = [
     {
         alt: "npm license",
-        href: "https://github.com/Nick2bad4u/eslint-plugin-typefest/blob/main/LICENSE",
-        src: "https://flat.badgen.net/npm/license/eslint-plugin-typefest?color=purple",
-    },
-    {
-        alt: "npm total downloads",
-        href: "https://www.npmjs.com/package/eslint-plugin-typefest",
-        src: "https://flat.badgen.net/npm/dt/eslint-plugin-typefest?color=pink",
+        href: "https://github.com/Nick2bad4u/eslint-plugin-github-actions/blob/main/LICENSE",
+        src: "https://flat.badgen.net/npm/license/eslint-plugin-github-actions?color=purple",
     },
     {
         alt: "latest GitHub release",
-        href: "https://github.com/Nick2bad4u/eslint-plugin-typefest/releases",
-        src: "https://flat.badgen.net/github/release/Nick2bad4u/eslint-plugin-typefest?color=cyan",
+        href: "https://github.com/Nick2bad4u/eslint-plugin-github-actions/releases",
+        src: "https://flat.badgen.net/github/release/Nick2bad4u/eslint-plugin-github-actions?color=cyan",
     },
     {
         alt: "GitHub stars",
-        href: "https://github.com/Nick2bad4u/eslint-plugin-typefest/stargazers",
-        src: "https://flat.badgen.net/github/stars/Nick2bad4u/eslint-plugin-typefest?color=yellow",
-    },
-    {
-        alt: "GitHub forks",
-        href: "https://github.com/Nick2bad4u/eslint-plugin-typefest/forks",
-        src: "https://flat.badgen.net/github/forks/Nick2bad4u/eslint-plugin-typefest?color=green",
+        href: "https://github.com/Nick2bad4u/eslint-plugin-github-actions/stargazers",
+        src: "https://flat.badgen.net/github/stars/Nick2bad4u/eslint-plugin-github-actions?color=yellow",
     },
     {
         alt: "GitHub open issues",
-        href: "https://github.com/Nick2bad4u/eslint-plugin-typefest/issues",
-        src: "https://flat.badgen.net/github/open-issues/Nick2bad4u/eslint-plugin-typefest?color=red",
-    },
-    {
-        alt: "mutation testing badge",
-        href: "https://dashboard.stryker-mutator.io/reports/github.com/Nick2bad4u/eslint-plugin-typefest/main",
-        src: "https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FNick2bad4u%2Feslint-plugin-typefest%2Fmain",
+        href: "https://github.com/Nick2bad4u/eslint-plugin-github-actions/issues",
+        src: "https://flat.badgen.net/github/open-issues/Nick2bad4u/eslint-plugin-github-actions?color=red",
     },
 ] as const satisfies readonly LiveBadge[];
 
-/**
- * Renders live repository, package, and mutation badges.
- *
- * @param props - Optional list class override.
- *
- * @returns Badge strip with links to package/repository metadata.
- */
+/** Render live package and repository badges. */
 export default function GitHubStats({ className = "" }: GitHubStatsProps) {
     const badgeListClassName = [styles.liveBadgeList, className]
         .filter(Boolean)
@@ -75,9 +54,9 @@ export default function GitHubStats({ className = "" }: GitHubStatsProps) {
                         <img
                             alt={badge.alt}
                             className={styles.liveBadgeImage}
-                            src={badge.src}
-                            loading="lazy"
                             decoding="async"
+                            loading="lazy"
+                            src={badge.src}
                         />
                     </Link>
                 </li>

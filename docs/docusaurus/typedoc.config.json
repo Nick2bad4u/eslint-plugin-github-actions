@@ -419,7 +419,7 @@
         "ini",
         "diff"
     ],
-    "hostedBaseUrl": "https://nick2bad4u.github.io/eslint-plugin-typefest/",
+    "hostedBaseUrl": "https://nick2bad4u.github.io/eslint-plugin-github-actions/",
     "includeDocCommentReferences": false,
     "includeHierarchySummary": true,
     "includeVersion": true,
@@ -517,7 +517,7 @@
         "@sealed",
         "@virtual"
     ],
-    "name": "eslint-plugin-typefest Documentation",
+    "name": "eslint-plugin-github-actions Documentation",
     "navigation": {
         "compactFolders": false,
         "excludeReferences": false,

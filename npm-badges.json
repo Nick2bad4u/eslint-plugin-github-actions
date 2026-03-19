@@ -1,16 +1,16 @@
 {
     "config": {
         "githubBranch": "main",
-        "githubSlug": "Nick2bad4u/eslint-plugin-typefest",
+        "githubSlug": "Nick2bad4u/eslint-plugin-github-actions",
         "githubUsername": "Nick2bad4u",
         "githubWorkflow": "ci.yml",
-        "homepage": "https://nick2bad4u.github.io/eslint-plugin-typefest/",
+        "homepage": "https://nick2bad4u.github.io/eslint-plugin-github-actions/",
         "nodeicoQueryString": {
             "compact": true,
             "downloads": true,
             "stars": true
         },
-        "npmPackageName": "eslint-plugin-typefest"
+        "npmPackageName": "eslint-plugin-github-actions"
     },
     "list": [
         "npmversion",
