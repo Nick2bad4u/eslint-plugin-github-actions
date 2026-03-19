@@ -1,4 +1,4 @@
-name: Mutation Testing (Stryker)
+name: Mutation Testing Stryker
 
 on:
     schedule:

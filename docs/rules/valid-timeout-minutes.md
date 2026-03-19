@@ -1,0 +1,48 @@
+# valid-timeout-minutes
+
+> **Rule catalog ID:** R017
+
+## Targeted pattern scope
+
+GitHub Actions workflow YAML files that set `timeout-minutes` on jobs or steps.
+
+## What this rule reports
+
+This rule reports literal `timeout-minutes` values that are not positive integers or that fall outside the configured allowed range.
+
+## Why this rule exists
+
+Timeout values are operational safety limits. Invalid or out-of-policy values can lead to stuck runners, wasted compute, or unexpectedly long execution windows.
+
+## ❌ Incorrect
+
+```yaml
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 0
+```
+
+## ✅ Correct
+
+```yaml
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+```
+
+```yaml
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ fromJSON(vars.JOB_TIMEOUT_MINUTES) }}
+```
+
+## Further reading
+
+- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes>
+- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepscontinue-on-error>

@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://www.schemastore.org/github-workflow.json
-name: Summarize new issues and pull requests
+name: Summarize New Issues And Pull Requests
 
 on:
     issues:

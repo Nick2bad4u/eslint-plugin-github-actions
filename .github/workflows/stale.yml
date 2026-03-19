@@ -23,7 +23,7 @@
 # https://github.com/actions/stale
 
 # yaml-language-server: $schema=https://www.schemastore.org/github-workflow.json
-name: Mark stale issues and pull requests
+name: Mark Stale Issues And Pull Requests
 
 on:
     schedule:

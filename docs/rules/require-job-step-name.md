@@ -1,0 +1,43 @@
+# require-job-step-name
+
+> **Rule catalog ID:** R008
+
+## Targeted pattern scope
+
+GitHub Actions workflow YAML files that declare explicit job steps.
+
+## What this rule reports
+
+This rule reports steps that omit `name` or set `name` to a non-string or empty value.
+
+## Why this rule exists
+
+Step names make job logs readable and help reviewers understand the intent of a step without reading the shell command or action source.
+
+## ❌ Incorrect
+
+```yaml
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm test
+```
+
+## ✅ Correct
+
+```yaml
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run tests
+        run: npm test
+```
+
+## Further reading
+
+- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idsteps>
+- <https://docs.github.com/actions/monitoring-and-troubleshooting-workflows/using-workflow-run-logs>

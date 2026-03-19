@@ -28,8 +28,13 @@ describe("exported presets", () => {
                 (left, right) => left.localeCompare(right)
             )
         ).toEqual([
+            "github-actions/no-invalid-key",
+            "github-actions/prefer-file-extension",
+            "github-actions/require-action-name",
             "github-actions/require-job-timeout-minutes",
             "github-actions/require-workflow-permissions",
+            "github-actions/valid-timeout-minutes",
+            "github-actions/valid-trigger-events",
         ]);
         expect(
             Object.keys(githubActionsPlugin.configs.security.rules).toSorted(
@@ -44,10 +49,24 @@ describe("exported presets", () => {
                 (left, right) => left.localeCompare(right)
             )
         ).toEqual([
+            "github-actions/action-name-casing",
+            "github-actions/job-id-casing",
+            "github-actions/max-jobs-per-action",
+            "github-actions/no-external-job",
+            "github-actions/no-invalid-key",
+            "github-actions/no-top-level-env",
             "github-actions/pin-action-shas",
+            "github-actions/prefer-fail-fast",
+            "github-actions/prefer-file-extension",
+            "github-actions/require-action-name",
+            "github-actions/require-action-run-name",
+            "github-actions/require-job-name",
+            "github-actions/require-job-step-name",
             "github-actions/require-job-timeout-minutes",
             "github-actions/require-workflow-concurrency",
             "github-actions/require-workflow-permissions",
+            "github-actions/valid-timeout-minutes",
+            "github-actions/valid-trigger-events",
         ]);
     });
 });

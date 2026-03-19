@@ -7,10 +7,26 @@ const docsRoot = path.join(process.cwd(), "docs", "rules");
 describe("docs integrity", () => {
     it("contains markdown pages for every published rule", () => {
         const requiredRuleDocNames = [
+            "action-name-casing.md",
+            "job-id-casing.md",
+            "max-jobs-per-action.md",
+            "no-external-job.md",
+            "no-invalid-key.md",
+            "no-top-level-env.md",
+            "no-top-level-permissions.md",
             "require-workflow-permissions.md",
             "require-job-timeout-minutes.md",
             "pin-action-shas.md",
+            "prefer-fail-fast.md",
+            "prefer-file-extension.md",
+            "prefer-step-uses-style.md",
+            "require-action-name.md",
+            "require-action-run-name.md",
+            "require-job-name.md",
+            "require-job-step-name.md",
             "require-workflow-concurrency.md",
+            "valid-timeout-minutes.md",
+            "valid-trigger-events.md",
         ];
 
         for (const fileName of requiredRuleDocNames) {

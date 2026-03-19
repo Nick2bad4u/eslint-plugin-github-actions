@@ -708,16 +708,16 @@ export default defineConfig([
     // SECTION: ⌨️ GitHub Actions plugin (github-actions/*)
     // ═══════════════════════════════════════════════════════════════════════════════
     {
-        files: [
-            "src/**/*.{ts,tsx,mts,cts}",
-            //    "test/**/*.{ts,tsx,mts,cts}"
-        ],
-        name: "GitHub Actions plugin rules for source",
-        plugins: {
-            "github-actions": githubActionsPlugin,
-        },
+        files: githubActionsPlugin.configs.recommended.files,
+        languageOptions:
+            githubActionsPlugin.configs.recommended.languageOptions,
+        name: "GitHub Actions plugin rules for workflows",
+        plugins: githubActionsPlugin.configs.recommended.plugins,
         rules: {
-            ...githubActionsPlugin.configs.all.rules,
+            ...githubActionsPlugin.configs.recommended.rules,
+            ...githubActionsPlugin.configs.security.rules,
+            "github-actions/require-job-timeout-minutes": "off",
+            "github-actions/require-workflow-permissions": "off",
         },
     },
     // #endregion

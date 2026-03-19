@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://www.schemastore.org/github-workflow.json
-name: GitLeaks Scan
+name: Git Leaks Scan
 on:
     pull_request:
     push:

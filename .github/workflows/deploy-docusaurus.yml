@@ -1,6 +1,6 @@
 # Deploy Docusaurus site to GitHub Pages
 # yaml-language-server: $schema=https://www.schemastore.org/github-workflow.json
-name: Deploy Docusaurus to GitHub Pages
+name: Deploy Docusaurus To Git Hub Pages
 
 on:
     push:
