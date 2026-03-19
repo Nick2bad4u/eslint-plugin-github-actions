@@ -17,7 +17,6 @@ import {
     githubActionsConfigReferenceToName,
 } from "./_internal/github-actions-config-references.js";
 import { githubActionsRules } from "./_internal/rules-registry.js";
-import { WORKFLOW_FILE_GLOBS } from "./_internal/workflow-yaml.js";
 
 /** ESLint severity used by generated preset rule maps. */
 const ERROR_SEVERITY = "error" as const;
@@ -127,10 +126,13 @@ const createPresetRuleNamesByConfig = (): Record<
         GithubActionsConfigName,
         GithubActionsRuleName[]
     > = {
+        actionMetadata: [],
         all: [],
         recommended: [],
         security: [],
         strict: [],
+        workflowTemplateProperties: [],
+        workflowTemplates: [],
     };
 
     for (const [ruleName, rule] of githubActionsRuleEntries) {
@@ -176,7 +178,6 @@ function withGithubActionsPlugin(
 
     return {
         ...config,
-        files: config.files ?? [...WORKFLOW_FILE_GLOBS],
         languageOptions: {
             ...existingLanguageOptions,
             parser: existingLanguageOptions["parser"] ?? yamlParser,
@@ -208,6 +209,7 @@ const createGithubActionsConfigsDefinition = (): GithubActionsConfigs => {
 
         configs[configName] = withGithubActionsPlugin(
             {
+                files: [...metadata.files],
                 name: metadata.presetName,
                 rules: errorRulesFor(presetRuleNamesByConfig[configName]),
             },

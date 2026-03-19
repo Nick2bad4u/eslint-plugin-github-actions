@@ -10,6 +10,7 @@ Balanced defaults for most repositories.
 - `github-actions/no-invalid-key`
 - `github-actions/no-invalid-reusable-workflow-job-key`
 - `github-actions/no-secrets-in-if`
+- `github-actions/no-template-placeholder-in-non-template-workflow`
 - `github-actions/no-unknown-job-output-reference`
 - `github-actions/prefer-file-extension`
 - `github-actions/prefer-inputs-context`

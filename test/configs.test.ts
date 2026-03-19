@@ -9,16 +9,32 @@ describe("exported presets", () => {
                 left.localeCompare(right)
             )
         ).toEqual([
+            "actionMetadata",
             "all",
             "recommended",
             "security",
             "strict",
+            "workflowTemplateProperties",
+            "workflowTemplates",
         ]);
     });
 
-    it("scopes presets to workflow YAML files", () => {
+    it("scopes core workflow presets to workflow YAML files", () => {
         expect(githubActionsPlugin.configs.recommended.files).toEqual([
             ".github/workflows/*.{yml,yaml}",
+        ]);
+    });
+
+    it("exports dedicated action metadata and workflow template scopes", () => {
+        expect(githubActionsPlugin.configs.actionMetadata.files).toEqual([
+            "**/action.{yml,yaml}",
+        ]);
+        expect(
+            githubActionsPlugin.configs.workflowTemplateProperties.files
+        ).toEqual(["**/workflow-templates/*.properties.json"]);
+        expect(githubActionsPlugin.configs.workflowTemplates.files).toEqual([
+            "**/workflow-templates/*.{yml,yaml}",
+            "**/workflow-templates/*.properties.json",
         ]);
     });
 
@@ -33,6 +49,7 @@ describe("exported presets", () => {
             "github-actions/no-invalid-reusable-workflow-job-key",
             "github-actions/no-invalid-workflow-call-output-value",
             "github-actions/no-secrets-in-if",
+            "github-actions/no-template-placeholder-in-non-template-workflow",
             "github-actions/no-unknown-job-output-reference",
             "github-actions/no-write-all-permissions",
             "github-actions/prefer-file-extension",
@@ -80,6 +97,7 @@ describe("exported presets", () => {
             "github-actions/no-pr-head-checkout-in-pull-request-target",
             "github-actions/no-secrets-in-if",
             "github-actions/no-self-hosted-runner-on-fork-pr-events",
+            "github-actions/no-template-placeholder-in-non-template-workflow",
             "github-actions/no-top-level-env",
             "github-actions/no-unknown-job-output-reference",
             "github-actions/no-unknown-step-reference",
@@ -108,6 +126,64 @@ describe("exported presets", () => {
             "github-actions/require-workflow-run-branches",
             "github-actions/valid-timeout-minutes",
             "github-actions/valid-trigger-events",
+        ]);
+
+        expect(
+            Object.keys(
+                githubActionsPlugin.configs.actionMetadata.rules
+            ).toSorted((left, right) => left.localeCompare(right))
+        ).toEqual([
+            "github-actions/no-case-insensitive-input-id-collision",
+            "github-actions/no-composite-input-env-access",
+            "github-actions/no-deprecated-node-runtime",
+            "github-actions/no-duplicate-composite-step-id",
+            "github-actions/no-post-if-without-post",
+            "github-actions/no-pre-if-without-pre",
+            "github-actions/no-required-input-with-default",
+            "github-actions/no-unknown-input-reference-in-composite",
+            "github-actions/no-unused-input-in-composite",
+            "github-actions/prefer-action-yml",
+            "github-actions/require-composite-step-name",
+        ]);
+
+        expect(
+            Object.keys(
+                githubActionsPlugin.configs.workflowTemplateProperties.rules
+            ).toSorted((left, right) => left.localeCompare(right))
+        ).toEqual([
+            "github-actions/no-empty-template-file-pattern",
+            "github-actions/no-icon-file-extension-in-template-icon-name",
+            "github-actions/no-invalid-template-file-pattern-regex",
+            "github-actions/no-path-separators-in-template-icon-name",
+            "github-actions/no-subdirectory-template-file-pattern",
+            "github-actions/no-universal-template-file-pattern",
+            "github-actions/require-template-categories",
+            "github-actions/require-template-file-patterns",
+            "github-actions/require-template-icon-file-exists",
+            "github-actions/require-template-icon-name",
+            "github-actions/require-workflow-template-properties-pair",
+        ]);
+
+        expect(
+            Object.keys(
+                githubActionsPlugin.configs.workflowTemplates.rules
+            ).toSorted((left, right) => left.localeCompare(right))
+        ).toEqual([
+            "github-actions/no-empty-template-file-pattern",
+            "github-actions/no-hardcoded-default-branch-in-template",
+            "github-actions/no-icon-file-extension-in-template-icon-name",
+            "github-actions/no-invalid-template-file-pattern-regex",
+            "github-actions/no-path-separators-in-template-icon-name",
+            "github-actions/no-subdirectory-template-file-pattern",
+            "github-actions/no-universal-template-file-pattern",
+            "github-actions/prefer-template-yml-extension",
+            "github-actions/require-template-categories",
+            "github-actions/require-template-file-patterns",
+            "github-actions/require-template-icon-file-exists",
+            "github-actions/require-template-icon-name",
+            "github-actions/require-template-workflow-name",
+            "github-actions/require-workflow-template-pair",
+            "github-actions/require-workflow-template-properties-pair",
         ]);
     });
 });

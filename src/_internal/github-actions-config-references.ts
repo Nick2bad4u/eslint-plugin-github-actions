@@ -2,9 +2,18 @@
  * @packageDocumentation
  * Canonical preset names and docs references used by eslint-plugin-github-actions.
  */
+import {
+    ACTION_METADATA_FILE_GLOBS,
+    WORKFLOW_TEMPLATE_FILE_GLOBS,
+    WORKFLOW_TEMPLATE_PROPERTIES_FILE_GLOBS,
+} from "./lint-targets.js";
+import { WORKFLOW_FILE_GLOBS } from "./workflow-yaml.js";
 
 /** Ordered preset names exposed through `plugin.configs`. */
 export const githubActionsConfigNames = [
+    "actionMetadata",
+    "workflowTemplateProperties",
+    "workflowTemplates",
     "recommended",
     "security",
     "strict",
@@ -18,10 +27,14 @@ export type GithubActionsConfigName = (typeof githubActionsConfigNames)[number];
 export const githubActionsConfigReferenceToName: Readonly<
     Record<string, GithubActionsConfigName>
 > = {
+    "github-actions.configs.actionMetadata": "actionMetadata",
     "github-actions.configs.all": "all",
     "github-actions.configs.recommended": "recommended",
     "github-actions.configs.security": "security",
     "github-actions.configs.strict": "strict",
+    "github-actions.configs.workflowTemplateProperties":
+        "workflowTemplateProperties",
+    "github-actions.configs.workflowTemplates": "workflowTemplates",
 } as const satisfies Record<string, GithubActionsConfigName>;
 
 /** Valid config reference strings accepted in rule metadata. */
@@ -34,33 +47,63 @@ export const githubActionsConfigMetadataByName: Readonly<
         GithubActionsConfigName,
         {
             description: string;
+            files: readonly string[];
             icon: string;
             presetName: string;
         }
     >
 > = {
+    actionMetadata: {
+        description:
+            "Linting defaults for GitHub Action metadata files (`action.yml` / `action.yaml`).",
+        files: ACTION_METADATA_FILE_GLOBS,
+        icon: "🧩",
+        presetName: "github-actions:action-metadata",
+    },
     all: {
         description:
             "Enables every available GitHub Actions workflow rule published by this plugin.",
+        files: [
+            ...WORKFLOW_FILE_GLOBS,
+            ...ACTION_METADATA_FILE_GLOBS,
+            ...WORKFLOW_TEMPLATE_FILE_GLOBS,
+        ],
         icon: "🟣",
         presetName: "github-actions:all",
     },
     recommended: {
         description:
             "Balanced defaults for most repositories authoring GitHub Actions workflows.",
+        files: WORKFLOW_FILE_GLOBS,
         icon: "🟡",
         presetName: "github-actions:recommended",
     },
     security: {
         description:
             "Security-focused workflow hardening checks for action usage and token scope.",
+        files: WORKFLOW_FILE_GLOBS,
         icon: "🛡️",
         presetName: "github-actions:security",
     },
     strict: {
         description:
             "Opinionated operational guardrails for mature workflow estates.",
+        files: WORKFLOW_FILE_GLOBS,
         icon: "🔴",
         presetName: "github-actions:strict",
+    },
+    workflowTemplateProperties: {
+        description:
+            "Linting defaults for workflow-template metadata files (`*.properties.json`).",
+        files: WORKFLOW_TEMPLATE_PROPERTIES_FILE_GLOBS,
+        icon: "🗂️",
+        presetName: "github-actions:workflow-template-properties",
+    },
+    workflowTemplates: {
+        description:
+            "Workflow template package linting for both template YAML and metadata files.",
+        files: WORKFLOW_TEMPLATE_FILE_GLOBS,
+        icon: "🧱",
+        presetName: "github-actions:workflow-templates",
     },
 } as const;

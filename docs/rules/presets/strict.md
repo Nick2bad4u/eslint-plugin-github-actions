@@ -20,6 +20,7 @@ Opinionated operational guardrails for mature workflow estates.
 - `github-actions/no-pr-head-checkout-in-pull-request-target`
 - `github-actions/no-secrets-in-if`
 - `github-actions/no-self-hosted-runner-on-fork-pr-events`
+- `github-actions/no-template-placeholder-in-non-template-workflow`
 - `github-actions/no-top-level-env`
 - `github-actions/no-unknown-job-output-reference`
 - `github-actions/no-unknown-step-reference`

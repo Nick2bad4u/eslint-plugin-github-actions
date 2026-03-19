@@ -22,6 +22,9 @@ const rulesSectionHeading = "## Rules";
 const presetDocsUrlBase =
     "https://nick2bad4u.github.io/eslint-plugin-github-actions/docs/rules/presets";
 
+const getPresetDocsPathSegment = (presetName) =>
+    presetName.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
+
 const getReadmePath = () =>
     resolve(fileURLToPath(new URL("..", import.meta.url)), "README.md");
 
@@ -100,7 +103,7 @@ const normalizeRulePresetNames = (ruleModule) => {
 const createPresetLegendLines = () =>
     presetOrder.map((presetName) => {
         const metadata = githubActionsConfigMetadataByName[presetName];
-        const docsUrl = `${presetDocsUrlBase}/${presetName}`;
+        const docsUrl = `${presetDocsUrlBase}/${getPresetDocsPathSegment(presetName)}`;
 
         return `  - [${metadata.icon}](${docsUrl}) — \`github-actions.configs.${presetName}\``;
     });
@@ -110,7 +113,7 @@ const createRuleTableRow = ([ruleName, ruleModule]) => {
     const presetIcons = normalizeRulePresetNames(ruleModule)
         .map((presetName) => {
             const metadata = githubActionsConfigMetadataByName[presetName];
-            return `[${metadata.icon}](${presetDocsUrlBase}/${presetName})`;
+            return `[${metadata.icon}](${presetDocsUrlBase}/${getPresetDocsPathSegment(presetName)})`;
         })
         .join(" ");
 
