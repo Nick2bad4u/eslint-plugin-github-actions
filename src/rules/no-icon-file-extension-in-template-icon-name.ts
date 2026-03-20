@@ -30,7 +30,11 @@ const rule: Rule.RuleModule = {
                     "iconName"
                 );
 
-                if (!iconName?.toLowerCase().endsWith(".svg")) {
+                if (iconName === null) {
+                    return;
+                }
+
+                if (!iconName.toLowerCase().endsWith(".svg")) {
                     return;
                 }
 

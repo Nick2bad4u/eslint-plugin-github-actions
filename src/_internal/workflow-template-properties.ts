@@ -2,6 +2,7 @@
  * @packageDocumentation
  * Helpers for reading workflow-template metadata from `.properties.json` files.
  */
+/* eslint-disable @typescript-eslint/prefer-readonly-parameter-types -- YAML parser AST nodes are third-party mutable structures; readonly wrappers reduce interoperability across helper APIs. */
 import type { Rule } from "eslint";
 import type { AST } from "yaml-eslint-parser";
 
@@ -55,6 +56,7 @@ export const getWorkflowTemplateFilePatternEntries = (
 
     return entries;
 };
+/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types */
 
 /** Build the matching `.properties.json` path for a template YAML path. */
 export const getPairedTemplatePropertiesPath = (filePath: string): string => {

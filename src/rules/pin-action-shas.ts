@@ -46,7 +46,7 @@ const shouldValidateUsesReference = (reference: string): boolean =>
 const rule: Rule.RuleModule = {
     create(context) {
         const reportReference = (
-            node: NonNullable<Rule.Node>,
+            node: Readonly<NonNullable<Rule.Node>>,
             reference: string
         ): void => {
             if (!shouldValidateUsesReference(reference)) {
@@ -67,7 +67,7 @@ const rule: Rule.RuleModule = {
                 messageId: isReusableWorkflowReference(reference)
                     ? "unpinnedReusableWorkflow"
                     : "unpinnedAction",
-                node,
+                node: node as Rule.Node,
             });
         };
 

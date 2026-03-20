@@ -75,7 +75,7 @@ const isGithubActionsConfigReference = (
 /** Normalize stored rule docs config references to a validated string array. */
 const getRuleConfigReferences = (
     ruleName: GithubActionsRuleName,
-    rule: Rule.RuleModule
+    rule: Readonly<Rule.RuleModule>
 ): readonly GithubActionsConfigReference[] => {
     const docs = rule.meta?.docs as GithubActionsRuleDocs | undefined;
     const references = docs?.configs;

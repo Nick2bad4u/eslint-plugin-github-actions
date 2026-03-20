@@ -12,6 +12,7 @@ import {
 
 /** Construct a unicode regex from a pattern string. */
 const createUnicodeRegex = (pattern: string): RegExp =>
+    // eslint-disable-next-line security/detect-non-literal-regexp -- Intentional syntax validation of user-provided regex patterns.
     new RegExp(pattern, "u");
 
 /** Rule implementation for validating `filePatterns` regex syntax. */

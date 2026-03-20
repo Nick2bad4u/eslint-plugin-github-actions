@@ -13,9 +13,8 @@ import {
 } from "../_internal/workflow-yaml.js";
 import { collectYamlStringScalars } from "../_internal/yaml-traversal.js";
 
-/** Escape a string for safe interpolation into a regular expression. */
-const escapeForRegexp = (value: string): string =>
-    value.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`);
+/** Matches `inputs.<id>` references in composite-step string values. */
+const INPUT_REFERENCE_PATTERN = /inputs\.(?<inputId>[\w-]+)/gu;
 
 /** Rule implementation for unused composite input checks. */
 const rule: Rule.RuleModule = {
@@ -48,7 +47,19 @@ const rule: Rule.RuleModule = {
                 }
 
                 const allScalarValues = collectYamlStringScalars(runsMapping);
-                const concatenatedValues = allScalarValues.join("\n");
+                const referencedInputIds = new Set<string>();
+
+                for (const scalarValue of allScalarValues) {
+                    for (const match of scalarValue.matchAll(
+                        INPUT_REFERENCE_PATTERN
+                    )) {
+                        const matchedInputId = match.groups?.["inputId"];
+
+                        if (matchedInputId !== undefined) {
+                            referencedInputIds.add(matchedInputId);
+                        }
+                    }
+                }
 
                 for (const inputPair of inputsMapping.pairs) {
                     const inputId = getScalarStringValue(inputPair.key);
@@ -57,12 +68,7 @@ const rule: Rule.RuleModule = {
                         continue;
                     }
 
-                    const inputReferencePattern = new RegExp(
-                        String.raw`inputs\.${escapeForRegexp(inputId)}(?:\b|[.[])`,
-                        "u"
-                    );
-
-                    if (inputReferencePattern.test(concatenatedValues)) {
+                    if (referencedInputIds.has(inputId)) {
                         continue;
                     }
 

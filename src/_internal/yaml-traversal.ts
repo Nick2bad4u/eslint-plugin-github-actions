@@ -5,6 +5,7 @@
 import type { AST } from "yaml-eslint-parser";
 
 import { getScalarStringValue, unwrapYamlValue } from "./workflow-yaml.js";
+/* eslint-disable @typescript-eslint/prefer-readonly-parameter-types -- Traversal operates on parser-provided mutable AST node types. */
 
 /** Visit every string scalar contained in a YAML subtree. */
 export const visitYamlStringScalars = (
@@ -56,3 +57,5 @@ export const collectYamlStringScalars = (
 
     return values;
 };
+
+/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types */

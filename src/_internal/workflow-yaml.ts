@@ -2,6 +2,7 @@
  * @packageDocumentation
  * Shared YAML AST helpers for GitHub Actions workflow rules.
  */
+/* eslint-disable @typescript-eslint/prefer-readonly-parameter-types -- YAML AST nodes come from parser-owned mutable types shared across helper boundaries. */
 import type { Rule } from "eslint";
 import type { AST } from "yaml-eslint-parser";
 
@@ -183,6 +184,8 @@ export const getWorkflowJobs = (
 
     return jobs;
 };
+
+/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types */
 
 /** Collect the workflow event names declared under `on`. */
 export const getWorkflowEventNames = (
