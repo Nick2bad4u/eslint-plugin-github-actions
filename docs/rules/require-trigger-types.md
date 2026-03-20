@@ -46,5 +46,5 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows>
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onevent_nametypes>
+- [https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows](https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows)
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onevent_nametypes](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onevent_nametypes)

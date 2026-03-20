@@ -47,7 +47,7 @@ const homeCards = [
         description: "Compare recommended, security, strict, and all presets.",
         icon: "🧭",
         title: "Choose a preset",
-        to: "/docs/rules/presets/index",
+        to: "/docs/rules/presets",
     },
     {
         description:
@@ -67,33 +67,33 @@ export default function Home() {
             title="eslint-plugin-github-actions docs"
             description="Documentation for eslint-plugin-github-actions"
         >
-            <header className={styles.heroBanner}>
-                <div className={`container ${styles.heroContent}`}>
-                    <div className={styles.heroGrid}>
+            <header className={styles["heroBanner"]}>
+                <div className={`container ${styles["heroContent"]}`}>
+                    <div className={styles["heroGrid"]}>
                         <div>
-                            <p className={styles.heroKicker}>
+                            <p className={styles["heroKicker"]}>
                                 GitHub Actions workflow linting for quality,
                                 reliability, and security.
                             </p>
-                            <Heading as="h1" className={styles.heroTitle}>
+                            <Heading as="h1" className={styles["heroTitle"]}>
                                 eslint-plugin-github-actions
                             </Heading>
-                            <p className={styles.heroSubtitle}>
+                            <p className={styles["heroSubtitle"]}>
                                 Focused ESLint rules for workflow YAML files,
                                 including explicit permissions, job timeout
                                 enforcement, immutable SHA pinning, and workflow
                                 concurrency guidance.
                             </p>
 
-                            <div className={styles.heroActions}>
+                            <div className={styles["heroActions"]}>
                                 <Link
-                                    className={`button button--lg ${styles.heroActionButton} ${styles.heroActionPrimary}`}
+                                    className={`button button--lg ${styles["heroActionButton"]} ${styles["heroActionPrimary"]}`}
                                     to="/docs/rules/getting-started"
                                 >
                                     Start here
                                 </Link>
                                 <Link
-                                    className={`button button--lg ${styles.heroActionButton} ${styles.heroActionSecondary}`}
+                                    className={`button button--lg ${styles["heroActionButton"]} ${styles["heroActionSecondary"]}`}
                                     to="/docs/rules/overview"
                                 >
                                     View rules
@@ -101,10 +101,10 @@ export default function Home() {
                             </div>
                         </div>
 
-                        <aside className={styles.heroPanel}>
+                        <aside className={styles["heroPanel"]}>
                             <img
                                 alt="eslint-plugin-github-actions logo"
-                                className={styles.heroPanelLogo}
+                                className={styles["heroPanelLogo"]}
                                 decoding="async"
                                 height="240"
                                 loading="eager"
@@ -114,18 +114,18 @@ export default function Home() {
                         </aside>
                     </div>
 
-                    <GitHubStats className={styles.heroLiveBadges} />
+                    <GitHubStats className={styles["heroLiveBadges"] ?? ""} />
 
-                    <div className={styles.heroStats}>
+                    <div className={styles["heroStats"]}>
                         {heroStats.map((stat) => (
                             <article
                                 key={stat.headline}
-                                className={styles.heroStatCard}
+                                className={styles["heroStatCard"]}
                             >
-                                <p className={styles.heroStatHeading}>
+                                <p className={styles["heroStatHeading"]}>
                                     {stat.headline}
                                 </p>
-                                <p className={styles.heroStatDescription}>
+                                <p className={styles["heroStatDescription"]}>
                                     {stat.description}
                                 </p>
                             </article>
@@ -134,26 +134,32 @@ export default function Home() {
                 </div>
             </header>
 
-            <main className={styles.mainContent}>
+            <main className={styles["mainContent"]}>
                 <section className="container">
-                    <div className={styles.cardGrid}>
+                    <div className={styles["cardGrid"]}>
                         {homeCards.map((card) => (
-                            <article key={card.title} className={styles.card}>
-                                <div className={styles.cardHeader}>
-                                    <p className={styles.cardIcon}>
+                            <article
+                                key={card.title}
+                                className={styles["card"]}
+                            >
+                                <div className={styles["cardHeader"]}>
+                                    <p className={styles["cardIcon"]}>
                                         {card.icon}
                                     </p>
                                     <Heading
                                         as="h2"
-                                        className={styles.cardTitle}
+                                        className={styles["cardTitle"]}
                                     >
                                         {card.title}
                                     </Heading>
                                 </div>
-                                <p className={styles.cardDescription}>
+                                <p className={styles["cardDescription"]}>
                                     {card.description}
                                 </p>
-                                <Link className={styles.cardLink} to={card.to}>
+                                <Link
+                                    className={styles["cardLink"] ?? ""}
+                                    to={card.to}
+                                >
                                     Open section →
                                 </Link>
                             </article>

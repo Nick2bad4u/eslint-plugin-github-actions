@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -103,6 +103,101 @@ function runTypedoc(cwd, configFile) {
     );
 }
 
+const mdxEscapeMap = Object.freeze({
+    "<": "&lt;",
+    ">": "&gt;",
+    "{": "&#123;",
+    "}": "&#125;",
+});
+
+const hasMdxUnsafeCharacterPattern = /[<>{}]/u;
+const mdxUnsafeCharacterPattern = /[<>{}]/gu;
+
+/**
+ * Escape MDX-unsafe characters outside fenced code blocks.
+ *
+ * @param {string} markdownText - Markdown file contents.
+ *
+ * @returns {string} MDX-safe markdown text.
+ */
+function sanitizeMarkdownForMdx(markdownText) {
+    const lines = markdownText.split(/\r?\n/u);
+    let isInCodeFence = false;
+
+    const sanitizedLines = lines.map((line) => {
+        if (line.trimStart().startsWith("```")) {
+            isInCodeFence = !isInCodeFence;
+            return line;
+        }
+
+        if (isInCodeFence || !hasMdxUnsafeCharacterPattern.test(line)) {
+            return line;
+        }
+
+        return line.replace(
+            mdxUnsafeCharacterPattern,
+            (character) =>
+                mdxEscapeMap[
+                    /** @type {keyof typeof mdxEscapeMap} */ (character)
+                ] ?? character
+        );
+    });
+
+    const hasTrailingLineBreak = /\r?\n$/u.test(markdownText);
+    const nextContent = sanitizedLines.join("\n");
+
+    return hasTrailingLineBreak ? `${nextContent}\n` : nextContent;
+}
+
+/**
+ * Recursively collect markdown files under a directory.
+ *
+ * @param {string} directoryPath - Root directory.
+ *
+ * @returns {readonly string[]} Absolute markdown file paths.
+ */
+function getMarkdownFilePaths(directoryPath) {
+    const filePaths = [];
+
+    for (const entry of readdirSync(directoryPath, { withFileTypes: true })) {
+        const entryPath = resolve(directoryPath, entry.name);
+
+        if (entry.isDirectory()) {
+            filePaths.push(...getMarkdownFilePaths(entryPath));
+            continue;
+        }
+
+        if (entry.isFile() && entry.name.endsWith(".md")) {
+            filePaths.push(entryPath);
+        }
+    }
+
+    return filePaths;
+}
+
+/**
+ * Sanitize generated TypeDoc markdown output to avoid MDX parse errors in
+ * Docusaurus.
+ *
+ * @param {string} outputDirectoryPath - Absolute TypeDoc output directory.
+ */
+function sanitizeTypedocMarkdownOutput(outputDirectoryPath) {
+    if (!existsSync(outputDirectoryPath)) {
+        return;
+    }
+
+    for (const markdownFilePath of getMarkdownFilePaths(outputDirectoryPath)) {
+        const previousContent = readFileSync(markdownFilePath, "utf8");
+        const nextContent = sanitizeMarkdownForMdx(previousContent);
+
+        if (nextContent === previousContent) {
+            continue;
+        }
+
+        writeFileSync(markdownFilePath, nextContent, "utf8");
+    }
+}
+
 /**
  * Pick an unused drive letter suitable for a temporary `subst` mapping.
  *
@@ -173,6 +268,12 @@ const docsWorkspaceRelativePath = relative(
     repositoryRoot,
     docsWorkspaceDirectory
 );
+const typedocOutputDirectory = resolve(
+    docsWorkspaceDirectory,
+    "site-docs",
+    "developer",
+    "api"
+);
 const configFile = getConfigFileName(process.argv.slice(2));
 
 if (process.platform === "win32" && /[()]/u.test(repositoryRoot)) {
@@ -180,3 +281,5 @@ if (process.platform === "win32" && /[()]/u.test(repositoryRoot)) {
 } else {
     runTypedoc(docsWorkspaceDirectory, configFile);
 }
+
+sanitizeTypedocMarkdownOutput(typedocOutputDirectory);

@@ -588,9 +588,11 @@
     "treatValidationWarningsAsErrors": false,
     "treatWarningsAsErrors": false,
     "tsconfig": "tsconfig.typedoc.json",
+    "useCodeBlocks": true,
     "useCustomAnchors": true,
     "useFirstParagraphOfCommentAsSummary": true,
     "useHTMLAnchors": true,
+    "useHTMLEncodedBrackets": true,
     "useHostedBaseUrlForAbsoluteLinks": false,
     "useTsLinkResolution": true,
     "validation": {

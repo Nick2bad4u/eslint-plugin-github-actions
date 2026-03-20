@@ -44,5 +44,5 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes>
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepscontinue-on-error>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes)
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepscontinue-on-error](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepscontinue-on-error)

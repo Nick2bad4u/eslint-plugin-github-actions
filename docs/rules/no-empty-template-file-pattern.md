@@ -28,4 +28,4 @@ Template matching requires meaningful regex patterns.
 
 ## Further reading
 
-- <https://www.schemastore.org/github-workflow-template-properties.json>
+- [https://www.schemastore.org/github-workflow-template-properties.json](https://www.schemastore.org/github-workflow-template-properties.json)

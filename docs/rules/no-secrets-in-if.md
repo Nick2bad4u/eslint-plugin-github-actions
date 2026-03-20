@@ -40,5 +40,5 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsif>
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idif>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsif](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsif)
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idif](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idif)

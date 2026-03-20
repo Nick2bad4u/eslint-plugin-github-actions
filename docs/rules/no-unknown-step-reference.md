@@ -42,6 +42,6 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/contexts#steps-context>
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsid>
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idoutputs>
+- [https://docs.github.com/actions/reference/workflows-and-actions/contexts#steps-context](https://docs.github.com/actions/reference/workflows-and-actions/contexts#steps-context)
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsid](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsid)
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idoutputs](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idoutputs)

@@ -43,5 +43,5 @@ concurrency:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#concurrency>
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idconcurrency>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#concurrency](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#concurrency)
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idconcurrency](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idconcurrency)

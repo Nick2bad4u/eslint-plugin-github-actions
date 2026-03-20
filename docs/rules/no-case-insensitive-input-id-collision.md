@@ -34,4 +34,4 @@ inputs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/metadata-syntax#inputsinput_id>
+- [https://docs.github.com/actions/reference/workflows-and-actions/metadata-syntax#inputsinput_id](https://docs.github.com/actions/reference/workflows-and-actions/metadata-syntax#inputsinput_id)

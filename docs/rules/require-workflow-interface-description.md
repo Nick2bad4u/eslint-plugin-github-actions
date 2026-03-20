@@ -64,7 +64,7 @@ on:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_dispatchinputs>
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_callinputs>
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_callsecrets>
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_calloutputs>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_dispatchinputs](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_dispatchinputs)
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_callinputs](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_callinputs)
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_callsecrets](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_callsecrets)
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_calloutputs](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_calloutputs)

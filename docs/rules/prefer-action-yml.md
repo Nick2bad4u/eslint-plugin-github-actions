@@ -28,4 +28,4 @@ action.yml
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/metadata-syntax>
+- [https://docs.github.com/actions/reference/workflows-and-actions/metadata-syntax](https://docs.github.com/actions/reference/workflows-and-actions/metadata-syntax)

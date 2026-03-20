@@ -39,5 +39,5 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idsteps>
-- <https://docs.github.com/actions/monitoring-and-troubleshooting-workflows/using-workflow-run-logs>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idsteps](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idsteps)
+- [https://docs.github.com/actions/monitoring-and-troubleshooting-workflows/using-workflow-run-logs](https://docs.github.com/actions/monitoring-and-troubleshooting-workflows/using-workflow-run-logs)

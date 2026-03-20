@@ -34,5 +34,5 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#env>
-- <https://docs.github.com/actions/learn-github-actions/variables>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#env](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#env)
+- [https://docs.github.com/actions/learn-github-actions/variables](https://docs.github.com/actions/learn-github-actions/variables)

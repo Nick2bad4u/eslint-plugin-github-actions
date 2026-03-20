@@ -42,5 +42,5 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/using-jobs/using-a-matrix-for-your-jobs>
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstrategy>
+- [https://docs.github.com/actions/using-jobs/using-a-matrix-for-your-jobs](https://docs.github.com/actions/using-jobs/using-a-matrix-for-your-jobs)
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstrategy](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstrategy)

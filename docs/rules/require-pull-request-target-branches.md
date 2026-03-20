@@ -49,5 +49,5 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request_target>
-- <https://docs.github.com/actions/reference/security/secure-use>
+- [https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request_target](https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request_target)
+- [https://docs.github.com/actions/reference/security/secure-use](https://docs.github.com/actions/reference/security/secure-use)

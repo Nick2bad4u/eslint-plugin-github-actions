@@ -35,5 +35,5 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idsecretsinherit>
-- <https://docs.github.com/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idsecretsinherit](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idsecretsinherit)
+- [https://docs.github.com/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow](https://docs.github.com/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow)

@@ -33,5 +33,5 @@ on:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#run-name>
-- <https://docs.github.com/actions/using-workflows/manually-running-a-workflow>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#run-name](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#run-name)
+- [https://docs.github.com/actions/using-workflows/manually-running-a-workflow](https://docs.github.com/actions/using-workflows/manually-running-a-workflow)

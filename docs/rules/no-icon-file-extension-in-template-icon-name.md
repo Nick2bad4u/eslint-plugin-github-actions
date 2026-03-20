@@ -28,4 +28,4 @@ Template icon names should be bare icon identifiers, not filenames with extensio
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/reusing-workflow-configurations#metadata-file-requirements>
+- [https://docs.github.com/actions/reference/workflows-and-actions/reusing-workflow-configurations#metadata-file-requirements](https://docs.github.com/actions/reference/workflows-and-actions/reusing-workflow-configurations#metadata-file-requirements)

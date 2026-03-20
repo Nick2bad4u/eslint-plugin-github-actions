@@ -49,6 +49,6 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/using-workflows/reusing-workflows>
-- <https://docs.github.com/actions/reference/workflows-and-actions/contexts#context-availability>
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_calloutputs>
+- [https://docs.github.com/actions/using-workflows/reusing-workflows](https://docs.github.com/actions/using-workflows/reusing-workflows)
+- [https://docs.github.com/actions/reference/workflows-and-actions/contexts#context-availability](https://docs.github.com/actions/reference/workflows-and-actions/contexts#context-availability)
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_calloutputs](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_calloutputs)

@@ -56,5 +56,5 @@ This rule validates keys in the most common workflow mappings where misspellings
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax>
-- <https://docs.github.com/actions/using-jobs/using-jobs-in-a-workflow>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax)
+- [https://docs.github.com/actions/using-jobs/using-jobs-in-a-workflow](https://docs.github.com/actions/using-jobs/using-jobs-in-a-workflow)

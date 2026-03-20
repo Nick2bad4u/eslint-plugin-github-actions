@@ -39,6 +39,6 @@ on:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_dispatchinputs>
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_dispatchinputsinput_idtype>
-- <https://docs.github.com/actions/reference/workflows-and-actions/contexts#inputs-context>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_dispatchinputs](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_dispatchinputs)
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_dispatchinputsinput_idtype](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_dispatchinputsinput_idtype)
+- [https://docs.github.com/actions/reference/workflows-and-actions/contexts#inputs-context](https://docs.github.com/actions/reference/workflows-and-actions/contexts#inputs-context)

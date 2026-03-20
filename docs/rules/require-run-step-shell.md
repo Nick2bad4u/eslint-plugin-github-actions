@@ -54,6 +54,6 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsshell>
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#defaultsrunshell>
-- <https://github.com/rhysd/actionlint/issues/374>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsshell](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsshell)
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#defaultsrunshell](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#defaultsrunshell)
+- [https://github.com/rhysd/actionlint/issues/374](https://github.com/rhysd/actionlint/issues/374)

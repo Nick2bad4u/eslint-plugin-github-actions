@@ -44,5 +44,5 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/reusable-workflows-reference#supported-keywords-for-jobs-that-call-a-reusable-workflow>
-- <https://docs.github.com/actions/using-workflows/reusing-workflows>
+- [https://docs.github.com/actions/reference/reusable-workflows-reference#supported-keywords-for-jobs-that-call-a-reusable-workflow](https://docs.github.com/actions/reference/reusable-workflows-reference#supported-keywords-for-jobs-that-call-a-reusable-workflow)
+- [https://docs.github.com/actions/using-workflows/reusing-workflows](https://docs.github.com/actions/using-workflows/reusing-workflows)

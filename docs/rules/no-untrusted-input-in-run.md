@@ -44,5 +44,5 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/security/secure-use#good-practices-for-mitigating-script-injection-attacks>
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsrun>
+- [https://docs.github.com/actions/reference/security/secure-use#good-practices-for-mitigating-script-injection-attacks](https://docs.github.com/actions/reference/security/secure-use#good-practices-for-mitigating-script-injection-attacks)
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsrun](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsrun)

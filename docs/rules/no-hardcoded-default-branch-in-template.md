@@ -34,4 +34,4 @@ on:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/reusing-workflow-configurations>
+- [https://docs.github.com/actions/reference/workflows-and-actions/reusing-workflow-configurations](https://docs.github.com/actions/reference/workflows-and-actions/reusing-workflow-configurations)

@@ -33,5 +33,5 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idname>
-- <https://docs.github.com/actions/using-jobs/using-jobs-in-a-workflow>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idname](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idname)
+- [https://docs.github.com/actions/using-jobs/using-jobs-in-a-workflow](https://docs.github.com/actions/using-jobs/using-jobs-in-a-workflow)

@@ -36,5 +36,5 @@ on:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_runbranchesbranches-ignore>
-- <https://wellarchitected.github.com/library/application-security/recommendations/actions-security/>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_runbranchesbranches-ignore](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_runbranchesbranches-ignore)
+- [https://wellarchitected.github.com/library/application-security/recommendations/actions-security/](https://wellarchitected.github.com/library/application-security/recommendations/actions-security/)

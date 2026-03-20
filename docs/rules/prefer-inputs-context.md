@@ -54,5 +54,5 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_dispatch>
-- <https://docs.github.com/actions/reference/workflows-and-actions/contexts#inputs-context>
+- [https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_dispatch](https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_dispatch)
+- [https://docs.github.com/actions/reference/workflows-and-actions/contexts#inputs-context](https://docs.github.com/actions/reference/workflows-and-actions/contexts#inputs-context)

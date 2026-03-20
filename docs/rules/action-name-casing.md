@@ -34,5 +34,5 @@ _The second example is valid when the rule is configured for `kebab-case`._
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#name>
-- <https://docs.github.com/actions/monitoring-and-troubleshooting-workflows/using-workflow-run-logs>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#name](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#name)
+- [https://docs.github.com/actions/monitoring-and-troubleshooting-workflows/using-workflow-run-logs](https://docs.github.com/actions/monitoring-and-troubleshooting-workflows/using-workflow-run-logs)

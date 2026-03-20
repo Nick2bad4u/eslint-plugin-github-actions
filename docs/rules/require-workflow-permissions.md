@@ -45,5 +45,5 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#permissions>
-- <https://docs.github.com/actions/security-for-github-actions/security-guides/automatic-token-authentication>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#permissions](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#permissions)
+- [https://docs.github.com/actions/security-for-github-actions/security-guides/automatic-token-authentication](https://docs.github.com/actions/security-for-github-actions/security-guides/automatic-token-authentication)

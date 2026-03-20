@@ -44,4 +44,4 @@ runs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/metadata-syntax#runs-for-composite-actions>
+- [https://docs.github.com/actions/reference/workflows-and-actions/metadata-syntax#runs-for-composite-actions](https://docs.github.com/actions/reference/workflows-and-actions/metadata-syntax#runs-for-composite-actions)

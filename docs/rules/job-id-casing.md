@@ -43,5 +43,5 @@ _The second example is valid when the rule is configured for `snake_case`._
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_id>
-- <https://docs.github.com/actions/using-jobs/using-jobs-in-a-workflow>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_id](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_id)
+- [https://docs.github.com/actions/using-jobs/using-jobs-in-a-workflow](https://docs.github.com/actions/using-jobs/using-jobs-in-a-workflow)

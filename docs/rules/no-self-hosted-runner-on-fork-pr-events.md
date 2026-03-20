@@ -44,6 +44,6 @@ jobs:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request>
-- <https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request_target>
-- <https://docs.github.com/actions/reference/security/secure-use#hardening-for-self-hosted-runners>
+- [https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request](https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request)
+- [https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request_target](https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request_target)
+- [https://docs.github.com/actions/reference/security/secure-use#hardening-for-self-hosted-runners](https://docs.github.com/actions/reference/security/secure-use#hardening-for-self-hosted-runners)

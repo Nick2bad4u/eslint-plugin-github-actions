@@ -30,5 +30,5 @@ permissions:
 
 ## Further reading
 
-- <https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#permissions>
-- <https://docs.github.com/actions/security-guides/automatic-token-authentication#modifying-the-permissions-for-the-github_token>
+- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#permissions](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#permissions)
+- [https://docs.github.com/actions/security-guides/automatic-token-authentication#modifying-the-permissions-for-the-github_token](https://docs.github.com/actions/security-guides/automatic-token-authentication#modifying-the-permissions-for-the-github_token)

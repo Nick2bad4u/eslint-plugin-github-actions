@@ -37,23 +37,23 @@ const liveBadges = [
 
 /** Render live package and repository badges. */
 export default function GitHubStats({ className = "" }: GitHubStatsProps) {
-    const badgeListClassName = [styles.liveBadgeList, className]
+    const badgeListClassName = [styles["liveBadgeList"], className]
         .filter(Boolean)
         .join(" ");
 
     return (
         <ul className={badgeListClassName}>
             {liveBadges.map((badge) => (
-                <li key={badge.src} className={styles.liveBadgeListItem}>
+                <li key={badge.src} className={styles["liveBadgeListItem"]}>
                     <Link
-                        className={styles.liveBadgeAnchor}
+                        className={styles["liveBadgeAnchor"] ?? ""}
                         href={badge.href}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
                         <img
                             alt={badge.alt}
-                            className={styles.liveBadgeImage}
+                            className={styles["liveBadgeImage"]}
                             decoding="async"
                             loading="lazy"
                             src={badge.src}

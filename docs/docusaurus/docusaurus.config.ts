@@ -22,11 +22,13 @@ const config: Config = {
         locales: ["en"],
     },
     markdown: {
+        hooks: {
+            onBrokenMarkdownLinks: "warn",
+        },
         mermaid: true,
     },
     onBrokenAnchors: "warn",
     onBrokenLinks: "warn",
-    onBrokenMarkdownLinks: "warn",
     organizationName,
     plugins: [
         [

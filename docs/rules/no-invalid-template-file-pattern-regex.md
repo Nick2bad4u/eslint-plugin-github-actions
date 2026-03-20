@@ -28,4 +28,4 @@ Invalid regex values break template recommendation matching.
 
 ## Further reading
 
-- <https://www.schemastore.org/github-workflow-template-properties.json>
+- [https://www.schemastore.org/github-workflow-template-properties.json](https://www.schemastore.org/github-workflow-template-properties.json)
