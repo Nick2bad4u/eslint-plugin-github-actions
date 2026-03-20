@@ -91,6 +91,8 @@
         "lint:all:fix": "npm run lint:fix && npm run lint:css:fix && npm run lint:prettier:fix && npm run lint:remark && npm run lint:package && npm run lint:secretlint && npm run lint:yaml:fix && npm run lint:actions && npm run lint:circular",
         "lint:all:fix:quiet": "npm run lint:fix:quiet && npm run lint:css:fix && npm run lint:prettier:fix && npm run lint:remark && npm run lint:package && npm run lint:secretlint && npm run lint:yaml:fix && npm run lint:actions && npm run lint:circular",
         "lint:circular": "npm run madge:circular",
+        "lint:compat": "npm run lint:compat:eslint9 --",
+        "lint:compat:eslint9": "node scripts/lint-compat-eslint9.mjs",
         "lint:config:build": "npm run build:eslint-inspector",
         "lint:config:inspect": "npx eslint --inspect-config",
         "lint:css": "stylelint --cache --config stylelint.config.mjs --cache-strategy content --cache-location .cache/stylelintcache src/ docs/ --custom-formatter stylelint-formatter-pretty && echo \"Stylelint done!\"",
@@ -116,10 +118,9 @@
         "release:verify": "npm run build && npm run lint && npm run typecheck && npm run test && npm run docs:build && npm pack --dry-run",
         "remark:fix": "remark --rc-path .remarkrc.mjs --silently-ignore --ignore-path .remarkignore --frail --quiet --output -- \"*.{md,mdx}\" \"docs/**/*.{md,mdx}\"",
         "sync:peer-eslint-range": "node scripts/sync-peer-eslint-range.mjs",
-        "pretest": "npm run build",
         "sync:readme-rules-table": "node scripts/sync-readme-rules-table.mjs",
         "sync:readme-rules-table:write": "node scripts/sync-readme-rules-table.mjs --write",
-        "verify:readme-rules-table": "npm run build && npm run sync:readme-rules-table",
+        "pretest": "npm run build",
         "test": "vitest run",
         "test:ci": "cross-env CI=true vitest run --reporter=default",
         "test:coverage": "vitest run --coverage --reporter=default",
@@ -128,7 +129,8 @@
         "test:verbose": "vitest run --reporter=verbose",
         "test:watch": "vitest",
         "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.build.json --noEmit && tsc -p tsconfig.eslint.json --noEmit && tsc -p tsconfig.js.json --noEmit && npm run --workspace docs/docusaurus typecheck",
-        "update-deps": "npx ncu -i --install never && npm run sync:peer-eslint-range && npm install --force"
+        "update-deps": "npx ncu -i --install never && npm run sync:peer-eslint-range && npm install --force",
+        "verify:readme-rules-table": "npm run build && npm run sync:readme-rules-table"
     },
     "overrides": {
         "jsonc-eslint-parser": "$jsonc-eslint-parser"
