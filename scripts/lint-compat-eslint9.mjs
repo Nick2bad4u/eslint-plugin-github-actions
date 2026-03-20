@@ -7,7 +7,26 @@
  */
 
 import { ESLint } from "eslint";
-import builtPlugin from "../dist/plugin.js";
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
+const builtPluginModuleUrl = new URL("../dist/plugin.js", import.meta.url);
+const builtPluginPath = fileURLToPath(builtPluginModuleUrl);
+
+/** Parse and validate a CLI-provided ESLint major version. */
+const parseMajorVersionArgument = (rawValue, flagName) => {
+    if (!/^\d+$/u.test(rawValue)) {
+        throw new TypeError(`Invalid ${flagName} value '${rawValue}'`);
+    }
+
+    const parsedValue = Number.parseInt(rawValue, 10);
+
+    if (!Number.isSafeInteger(parsedValue) || parsedValue < 1) {
+        throw new TypeError(`Invalid ${flagName} value '${rawValue}'`);
+    }
+
+    return parsedValue;
+};
 
 /** Parse `--expect-eslint-major=&lt;n>` (or split form) from CLI args. */
 const parseExpectedEslintMajor = () => {
@@ -25,33 +44,20 @@ const parseExpectedEslintMajor = () => {
                 );
             }
 
-            const parsedValue = Number.parseInt(nextValue, 10);
-
-            if (!Number.isFinite(parsedValue)) {
-                throw new TypeError(
-                    `Invalid --expect-eslint-major value '${nextValue}'`
-                );
-            }
-
-            return parsedValue;
+            return parseMajorVersionArgument(
+                nextValue,
+                "--expect-eslint-major"
+            );
         }
 
         if (!argument.startsWith("--expect-eslint-major=")) {
             continue;
         }
 
-        const parsedValue = Number.parseInt(
+        return parseMajorVersionArgument(
             argument.slice("--expect-eslint-major=".length),
-            10
+            "--expect-eslint-major"
         );
-
-        if (!Number.isFinite(parsedValue)) {
-            throw new TypeError(
-                `Invalid --expect-eslint-major value '${argument}'`
-            );
-        }
-
-        return parsedValue;
     }
 
     return undefined;
@@ -60,15 +66,34 @@ const parseExpectedEslintMajor = () => {
 /** Read major version number from current ESLint runtime. */
 const getEslintMajorVersion = () => {
     const [majorToken] = ESLint.version.split(".");
-    const parsedMajor = Number.parseInt(majorToken ?? "", 10);
 
-    if (!Number.isFinite(parsedMajor)) {
+    if (!/^\d+$/u.test(majorToken ?? "")) {
         throw new TypeError(
             `Unable to parse ESLint major version from '${ESLint.version}'`
         );
     }
 
-    return parsedMajor;
+    return Number.parseInt(majorToken, 10);
+};
+
+/** Load the built plugin export from dist with clear diagnostics. */
+const loadBuiltPlugin = async () => {
+    if (!existsSync(builtPluginPath)) {
+        throw new TypeError(
+            `Missing built plugin at '${builtPluginPath}'. Run 'npm run build' before running compatibility smoke checks.`
+        );
+    }
+
+    const importedModule = await import("../dist/plugin.js");
+    const plugin = importedModule.default ?? importedModule;
+
+    if (plugin === undefined || plugin === null) {
+        throw new TypeError(
+            `Failed to load built plugin export from '${builtPluginPath}'`
+        );
+    }
+
+    return plugin;
 };
 
 /** Verify one preset/rule/file combination lint-runs and reports expected rule. */
@@ -133,13 +158,7 @@ const main = async () => {
         );
     }
 
-    const plugin = builtPlugin;
-
-    if (plugin === undefined || plugin === null) {
-        throw new TypeError(
-            "Failed to load built plugin export from dist/plugin.js"
-        );
-    }
+    const plugin = await loadBuiltPlugin();
 
     const smokeCases = [
         {

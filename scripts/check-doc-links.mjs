@@ -35,11 +35,13 @@ const parsePositiveIntegerFlag = (argumentPrefix, fallbackValue) => {
     }
 
     const numericPortion = argument.slice(argumentPrefix.length);
+    if (!/^\d+$/u.test(numericPortion)) {
+        return fallbackValue;
+    }
+
     const parsedValue = Number.parseInt(numericPortion, 10);
 
-    return Number.isNaN(parsedValue) || parsedValue < 1
-        ? fallbackValue
-        : parsedValue;
+    return parsedValue < 1 ? fallbackValue : parsedValue;
 };
 
 const maxPathDisplay = parsePositiveIntegerFlag("--max-path=", 50);
@@ -83,6 +85,78 @@ const EXTERNAL_PROTOCOLS = [
 ];
 
 const LEADING_BANG = /^!/;
+
+/**
+ * Parse a fenced-code marker from a trimmed markdown line.
+ *
+ * @param {string} trimmedLine
+ *
+ * @returns {{ length: number; marker: "`" | "~" } | null}
+ */
+function parseFenceMarker(trimmedLine) {
+    const firstCharacter = trimmedLine[0];
+
+    if (firstCharacter !== "`" && firstCharacter !== "~") {
+        return null;
+    }
+
+    let markerLength = 0;
+
+    while (trimmedLine[markerLength] === firstCharacter) {
+        markerLength += 1;
+    }
+
+    if (markerLength < 3) {
+        return null;
+    }
+
+    return {
+        length: markerLength,
+        marker: firstCharacter,
+    };
+}
+
+/**
+ * Strip fenced code blocks from markdown, supporting both ``` and ~~~ fences.
+ *
+ * @param {string} markdownText
+ *
+ * @returns {string}
+ */
+function stripFencedCodeBlocks(markdownText) {
+    const lines = markdownText.split(/\r?\n/u);
+    /** @type {{ length: number; marker: "`" | "~" } | null} */
+    let activeFence = null;
+    const retainedLines = [];
+
+    for (const line of lines) {
+        const trimmedLine = line.trimStart();
+        const fenceMarker = parseFenceMarker(trimmedLine);
+
+        if (activeFence === null && fenceMarker !== null) {
+            activeFence = fenceMarker;
+            continue;
+        }
+
+        if (
+            activeFence !== null &&
+            fenceMarker !== null &&
+            fenceMarker.marker === activeFence.marker &&
+            fenceMarker.length >= activeFence.length
+        ) {
+            activeFence = null;
+            continue;
+        }
+
+        if (activeFence !== null) {
+            continue;
+        }
+
+        retainedLines.push(line);
+    }
+
+    return retainedLines.join("\n");
+}
 
 /**
  * Truncate safely keeping last `max` codepoints
@@ -306,8 +380,7 @@ async function checkFile(markdownPath, issues, issueSet, metrics) {
     }
 
     const content = await readFile(markdownPath, "utf8");
-    // Skip fenced code blocks
-    const contentWithoutCodeBlocks = content.replaceAll(/```[\s\S]*?```/g, "");
+    const contentWithoutCodeBlocks = stripFencedCodeBlocks(content);
     const matches = Array.from(contentWithoutCodeBlocks.matchAll(LINK_PATTERN));
 
     if (matches.length === 0) {

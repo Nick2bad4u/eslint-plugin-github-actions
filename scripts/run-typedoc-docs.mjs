@@ -114,6 +114,36 @@ const hasMdxUnsafeCharacterPattern = /[<>{}]/u;
 const mdxUnsafeCharacterPattern = /[<>{}]/gu;
 
 /**
+ * Parse a fenced-code marker from a trimmed markdown line.
+ *
+ * @param {string} trimmedLine - Markdown line with leading whitespace removed.
+ *
+ * @returns {{ length: number; marker: "`" | "~" } | null}
+ */
+function parseFenceMarker(trimmedLine) {
+    const firstCharacter = trimmedLine[0];
+
+    if (firstCharacter !== "`" && firstCharacter !== "~") {
+        return null;
+    }
+
+    let markerLength = 0;
+
+    while (trimmedLine[markerLength] === firstCharacter) {
+        markerLength += 1;
+    }
+
+    if (markerLength < 3) {
+        return null;
+    }
+
+    return {
+        length: markerLength,
+        marker: firstCharacter,
+    };
+}
+
+/**
  * Escape MDX-unsafe characters outside fenced code blocks.
  *
  * @param {string} markdownText - Markdown file contents.
@@ -122,15 +152,29 @@ const mdxUnsafeCharacterPattern = /[<>{}]/gu;
  */
 function sanitizeMarkdownForMdx(markdownText) {
     const lines = markdownText.split(/\r?\n/u);
-    let isInCodeFence = false;
+    /** @type {{ length: number; marker: "`" | "~" } | null} */
+    let activeFence = null;
 
     const sanitizedLines = lines.map((line) => {
-        if (line.trimStart().startsWith("```")) {
-            isInCodeFence = !isInCodeFence;
+        const trimmedLine = line.trimStart();
+        const fenceMarker = parseFenceMarker(trimmedLine);
+
+        if (activeFence === null && fenceMarker !== null) {
+            activeFence = fenceMarker;
             return line;
         }
 
-        if (isInCodeFence || !hasMdxUnsafeCharacterPattern.test(line)) {
+        if (
+            activeFence !== null &&
+            fenceMarker !== null &&
+            fenceMarker.marker === activeFence.marker &&
+            fenceMarker.length >= activeFence.length
+        ) {
+            activeFence = null;
+            return line;
+        }
+
+        if (activeFence !== null || !hasMdxUnsafeCharacterPattern.test(line)) {
             return line;
         }
 

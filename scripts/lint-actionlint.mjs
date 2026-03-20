@@ -20,7 +20,9 @@ const repoRoot = process.cwd();
 const workflowsDir = path.join(repoRoot, ".github", "workflows");
 const rawArgs = process.argv.slice(2);
 const overrideExcluded = rawArgs.includes("--include-excluded");
-const excludedFiles = new Set(["FILL_EXCLUDED_FILES_HERE.yml"]);
+const excludedFiles = new Set(
+    ["FILL_EXCLUDED_FILES_HERE.yml"].map((fileName) => fileName.toLowerCase())
+);
 /** @type {Set<string>} */
 const flagsWithValues = new Set([
     "-config-file",

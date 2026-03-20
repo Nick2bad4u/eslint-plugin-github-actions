@@ -58,4 +58,4 @@ export const collectYamlStringScalars = (
     return values;
 };
 
-/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types */
+/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types -- Re-enable readonly-parameter checks outside YAML traversal internals. */

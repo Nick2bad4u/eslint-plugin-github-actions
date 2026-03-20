@@ -56,7 +56,7 @@ export const getWorkflowTemplateFilePatternEntries = (
 
     return entries;
 };
-/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types */
+/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types -- Re-enable readonly-parameter checks outside parser AST helper signatures. */
 
 /** Build the matching `.properties.json` path for a template YAML path. */
 export const getPairedTemplatePropertiesPath = (filePath: string): string => {

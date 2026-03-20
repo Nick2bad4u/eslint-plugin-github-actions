@@ -185,8 +185,6 @@ export const getWorkflowJobs = (
     return jobs;
 };
 
-/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types */
-
 /** Collect the workflow event names declared under `on`. */
 export const getWorkflowEventNames = (
     root: AST.YAMLMapping
@@ -233,3 +231,5 @@ export const getWorkflowEventNames = (
 
     return eventNames;
 };
+
+/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types -- Re-enable readonly-parameter checks after YAML AST helper declarations. */
