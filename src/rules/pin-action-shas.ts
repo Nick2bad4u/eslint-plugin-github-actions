@@ -55,13 +55,13 @@ const rule: Rule.RuleModule = {
 
             const ref = getReferenceRef(reference);
 
-            if (ref === null || FULL_SHA_PATTERN.test(ref)) {
+            if (ref !== null && FULL_SHA_PATTERN.test(ref)) {
                 return;
             }
 
             context.report({
                 data: {
-                    ref,
+                    ref: ref ?? "<missing ref>",
                     reference,
                 },
                 messageId: isReusableWorkflowReference(reference)

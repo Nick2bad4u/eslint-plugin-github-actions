@@ -68,7 +68,7 @@ const rule: Rule.RuleModule = {
                                 key,
                             },
                             messageId: "invalidReusableWorkflowJobKey",
-                            node: (pair.key ?? pair) as unknown as Rule.Node,
+                            node: pair.key as unknown as Rule.Node,
                         });
                     }
                 }

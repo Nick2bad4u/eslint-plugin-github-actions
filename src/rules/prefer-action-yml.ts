@@ -4,18 +4,12 @@
  */
 import type { Rule } from "eslint";
 
-import { usesYamlExtension } from "../_internal/lint-targets.js";
-
 /** Rule implementation for preferring `action.yml`. */
 const rule: Rule.RuleModule = {
     create(context) {
         return {
             Program(node) {
                 if (!context.filename.toLowerCase().endsWith("action.yaml")) {
-                    return;
-                }
-
-                if (!usesYamlExtension(context.filename)) {
                     return;
                 }
 

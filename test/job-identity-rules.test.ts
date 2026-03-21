@@ -25,6 +25,85 @@ describe("job identity rules", () => {
         expect(result.messages[0]?.ruleId).toBe("github-actions/job-id-casing");
     });
 
+    it("accepts kebab-case job ids with the default configuration", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+                "jobs:",
+                "  build-app:",
+                "    runs-on: ubuntu-latest",
+                "    name: Build App",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/job-id-casing": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("accepts configured alternate casing and ignored job ids", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+                "jobs:",
+                "  BuildApp:",
+                "    runs-on: ubuntu-latest",
+                "    name: Build App",
+                "  LEGACY_JOB:",
+                "    runs-on: ubuntu-latest",
+                "    name: Legacy",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/job-id-casing": [
+                        "error",
+                        {
+                            ignores: ["LEGACY_JOB"],
+                            PascalCase: true,
+                        },
+                    ],
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("falls back to default casing when no casing flags are enabled", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+                "jobs:",
+                "  BuildApp:",
+                "    runs-on: ubuntu-latest",
+                "    name: Build App",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/job-id-casing": [
+                        "error",
+                        {
+                            PascalCase: false,
+                            snake_case: false,
+                        },
+                    ],
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(1);
+        expect(result.messages[0]?.ruleId).toBe("github-actions/job-id-casing");
+    });
+
     it("requires every job to declare a name", async () => {
         const result = await lintWorkflow(
             [
@@ -72,6 +151,253 @@ describe("job identity rules", () => {
         expect(result.messages[0]?.ruleId).toBe(
             "github-actions/require-job-step-name"
         );
+    });
+
+    it("accepts jobs and steps with non-empty names", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+                "jobs:",
+                "  build:",
+                "    name: Build",
+                "    runs-on: ubuntu-latest",
+                "    steps:",
+                "      - name: Install",
+                "        run: npm ci",
+                "      - name: Test",
+                "        run: npm test",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-job-name": "error",
+                    "github-actions/require-job-step-name": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("reports non-mapping jobs as missing names", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+                "jobs:",
+                "  build: true",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-job-name": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(1);
+        expect(result.messages[0]?.ruleId).toBe(
+            "github-actions/require-job-name"
+        );
+        expect(result.messages[0]?.message).toContain("build");
+    });
+
+    it("reports blank job names", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+                "jobs:",
+                "  build:",
+                "    name: '   '",
+                "    runs-on: ubuntu-latest",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-job-name": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(1);
+        expect(result.messages[0]?.ruleId).toBe(
+            "github-actions/require-job-name"
+        );
+    });
+
+    it("reports null job names and unknown job ids for non-scalar keys", async () => {
+        const nullNameResult = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+                "jobs:",
+                "  build:",
+                "    name:",
+                "    runs-on: ubuntu-latest",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-job-name": "error",
+                },
+            }
+        );
+
+        const nonScalarKeyResult = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+                "jobs:",
+                "  ? [build]:",
+                "    runs-on: ubuntu-latest",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-job-name": "error",
+                },
+            }
+        );
+
+        expect(nullNameResult.messages).toHaveLength(1);
+        expect(nonScalarKeyResult.messages).toHaveLength(1);
+        expect(nonScalarKeyResult.messages[0]?.message).toContain("<unknown>");
+    });
+
+    it("ignores require-job-name when workflow root or jobs mapping is missing", async () => {
+        const nonMappingRootResult = await lintWorkflow("- push", {
+            rules: {
+                "github-actions/require-job-name": "error",
+            },
+        });
+
+        const noJobsResult = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-job-name": "error",
+                },
+            }
+        );
+
+        expect(nonMappingRootResult.messages).toHaveLength(0);
+        expect(noJobsResult.messages).toHaveLength(0);
+    });
+
+    it("reports blank step names", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+                "jobs:",
+                "  build:",
+                "    name: Build",
+                "    runs-on: ubuntu-latest",
+                "    steps:",
+                "      - name: '  '",
+                "        run: npm test",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-job-step-name": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(1);
+        expect(result.messages[0]?.ruleId).toBe(
+            "github-actions/require-job-step-name"
+        );
+    });
+
+    it("reports null step names", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+                "jobs:",
+                "  build:",
+                "    name: Build",
+                "    runs-on: ubuntu-latest",
+                "    steps:",
+                "      - name:",
+                "        run: npm test",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-job-step-name": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(1);
+        expect(result.messages[0]?.ruleId).toBe(
+            "github-actions/require-job-step-name"
+        );
+    });
+
+    it("ignores non-mapping step entries while still validating mapping steps", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+                "jobs:",
+                "  build:",
+                "    name: Build",
+                "    runs-on: ubuntu-latest",
+                "    steps:",
+                "      - uses: actions/checkout@v4",
+                "      - plain-string-step",
+                "      - name: Test",
+                "        run: npm test",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-job-step-name": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(1);
+        expect(result.messages[0]?.ruleId).toBe(
+            "github-actions/require-job-step-name"
+        );
+    });
+
+    it("ignores require-job-step-name when workflow root is non-mapping or jobs omit steps", async () => {
+        const nonMappingRootResult = await lintWorkflow("- push", {
+            rules: {
+                "github-actions/require-job-step-name": "error",
+            },
+        });
+
+        const noStepsResult = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-job-step-name": "error",
+                },
+            }
+        );
+
+        expect(nonMappingRootResult.messages).toHaveLength(0);
+        expect(noStepsResult.messages).toHaveLength(0);
     });
 
     it("reports workflows that exceed the configured job limit", async () => {

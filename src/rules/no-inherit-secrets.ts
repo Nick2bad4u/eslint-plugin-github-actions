@@ -52,8 +52,7 @@ const rule: Rule.RuleModule = {
                             jobId: job.id,
                         },
                         messageId: "inheritedSecrets",
-                        node: (secretsPair.value ??
-                            secretsPair) as unknown as Rule.Node,
+                        node: secretsPair.value as unknown as Rule.Node,
                     });
                 }
             },

@@ -31,8 +31,7 @@ const rule: Rule.RuleModule = {
                     scope,
                 },
                 messageId: "writeAllPermissions",
-                node: (permissionsPair.value ??
-                    permissionsPair) as unknown as Rule.Node,
+                node: permissionsPair.value as unknown as Rule.Node,
             });
         };
 

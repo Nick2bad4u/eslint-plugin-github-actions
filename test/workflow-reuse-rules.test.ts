@@ -131,6 +131,56 @@ describe("workflow reuse rules", () => {
         expect(result.messages).toHaveLength(0);
     });
 
+    it("ignores no-inherit-secrets for inline jobs and reusable jobs without secrets", async () => {
+        const inlineJobResult = await lintWorkflow(
+            [
+                "name: Reuse",
+                "on:",
+                "  workflow_dispatch:",
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    secrets: inherit",
+                "    steps:",
+                "      - run: echo hi",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/no-inherit-secrets": "error",
+                },
+            }
+        );
+
+        const reusableWithoutSecretsResult = await lintWorkflow(
+            [
+                "name: Reuse",
+                "on:",
+                "  workflow_dispatch:",
+                "jobs:",
+                "  deploy:",
+                "    uses: ./.github/workflows/deploy.yml",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/no-inherit-secrets": "error",
+                },
+            }
+        );
+
+        expect(inlineJobResult.messages).toHaveLength(0);
+        expect(reusableWithoutSecretsResult.messages).toHaveLength(0);
+    });
+
+    it("ignores no-inherit-secrets when workflow root is not a mapping", async () => {
+        const result = await lintWorkflow("- deploy", {
+            rules: {
+                "github-actions/no-inherit-secrets": "error",
+            },
+        });
+
+        expect(result.messages).toHaveLength(0);
+    });
+
     it("reports unsupported inline-job keys on reusable workflow caller jobs", async () => {
         const result = await lintWorkflow(
             [
@@ -213,6 +263,17 @@ describe("workflow reuse rules", () => {
                 },
             }
         );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("ignores no-invalid-reusable-workflow-job-key when workflow root is not a mapping", async () => {
+        const result = await lintWorkflow("- deploy", {
+            rules: {
+                "github-actions/no-invalid-reusable-workflow-job-key":
+                    "error",
+            },
+        });
 
         expect(result.messages).toHaveLength(0);
     });

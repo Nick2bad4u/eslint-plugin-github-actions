@@ -71,6 +71,37 @@ describe("workflow interface rules", () => {
         expect(result.output).not.toContain("github.event.inputs.environment");
     });
 
+    it("autofixes all github.event.inputs occurrences within the same scalar", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: Deploy",
+                "on:",
+                "  workflow_dispatch:",
+                "    inputs:",
+                "      environment:",
+                "        description: Deployment target",
+                "        required: true",
+                "        type: string",
+                "jobs:",
+                "  deploy:",
+                "    runs-on: ubuntu-latest",
+                `    if: ${githubExpression("github.event.inputs.environment == 'prod' && github.event.inputs.environment != ''")}`,
+                "    steps:",
+                '      - run: echo "Deploying"',
+            ].join("\n"),
+            {
+                fix: true,
+                rules: {
+                    "github-actions/prefer-inputs-context": "error",
+                },
+            }
+        );
+
+        expect(result.output).not.toContain("github.event.inputs.environment");
+        expect(result.output).toContain("inputs.environment == 'prod'");
+        expect(result.output).toContain("inputs.environment != ''");
+    });
+
     it("accepts workflow_dispatch expressions that already use inputs", async () => {
         const result = await lintWorkflow(
             [
@@ -95,6 +126,159 @@ describe("workflow interface rules", () => {
                 },
             }
         );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("does not report github.event.inputs references when workflow_dispatch is not configured", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: Deploy",
+                "on:",
+                "  push:",
+                "jobs:",
+                "  deploy:",
+                "    runs-on: ubuntu-latest",
+                `    if: ${githubExpression("github.event.inputs.environment == 'prod'")}`,
+                "    steps:",
+                `      - run: echo ${githubExpression("github.event.inputs.environment")}`,
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/prefer-inputs-context": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("handles null-valued mapping entries while traversing workflow_dispatch documents", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: Deploy",
+                "on:",
+                "  workflow_dispatch:",
+                "jobs:",
+                "  deploy:",
+                "    runs-on:",
+                "    env:",
+                "    steps:",
+                "      - run: echo safe",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/prefer-inputs-context": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("ignores prefer-inputs-context when workflow_dispatch is not declared", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: Deploy",
+                "on:",
+                "  push:",
+                "jobs:",
+                "  deploy:",
+                "    runs-on: ubuntu-latest",
+                `    if: ${githubExpression("github.event.inputs.environment == 'prod'")}`,
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/prefer-inputs-context": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("ignores non-string scalar values while traversing workflow_dispatch workflows", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: Deploy",
+                "on:",
+                "  workflow_dispatch:",
+                "jobs:",
+                "  deploy:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 5",
+                "    steps:",
+                "      - run: echo done",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/prefer-inputs-context": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("skips YAML alias nodes while traversing workflow_dispatch workflows", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: Deploy",
+                "on:",
+                "  workflow_dispatch:",
+                "shared-env: &shared_env",
+                "  GREETING: hello",
+                "jobs:",
+                "  deploy:",
+                "    runs-on: ubuntu-latest",
+                "    env: *shared_env",
+                "    steps:",
+                "      - run: echo done",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/prefer-inputs-context": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("reports legacy inputs usage even when escaped scalars do not produce a fix", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: Deploy",
+                "on:",
+                "  workflow_dispatch:",
+                "    inputs:",
+                "      environment:",
+                "        description: Deployment target",
+                "        required: true",
+                "        type: string",
+                "jobs:",
+                "  deploy:",
+                "    runs-on: ubuntu-latest",
+                "    if: \"${{ github\\u002eevent\\u002einputs\\u002eenvironment == 'prod' }}\"",
+            ].join("\n"),
+            {
+                fix: true,
+                rules: {
+                    "github-actions/prefer-inputs-context": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(1);
+        expect(result.output).toBeUndefined();
+    });
+
+    it("ignores prefer-inputs-context when workflow root is not a mapping", async () => {
+        const result = await lintWorkflow("- workflow_dispatch", {
+            rules: {
+                "github-actions/prefer-inputs-context": "error",
+            },
+        });
 
         expect(result.messages).toHaveLength(0);
     });
@@ -232,6 +416,90 @@ describe("workflow interface rules", () => {
         expect(result.messages).toHaveLength(0);
     });
 
+    it("ignores require-workflow-call-input-type when workflow_call is not configured", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: Deploy",
+                "on:",
+                "  workflow_dispatch:",
+                "    inputs:",
+                "      environment:",
+                "        type: string",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-call-input-type": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("ignores non-mapping workflow_call declarations and workflow_call without inputs", async () => {
+        const scalarWorkflowCallResult = await lintWorkflow(
+            [
+                "name: Reusable deploy",
+                "on:",
+                "  workflow_call: true",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-call-input-type": "error",
+                },
+            }
+        );
+        const noInputsResult = await lintWorkflow(
+            [
+                "name: Reusable deploy",
+                "on:",
+                "  workflow_call:",
+                "    secrets:",
+                "      token:",
+                "        required: true",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-call-input-type": "error",
+                },
+            }
+        );
+
+        expect(scalarWorkflowCallResult.messages).toHaveLength(0);
+        expect(noInputsResult.messages).toHaveLength(0);
+    });
+
+    it("reports invalid reusable workflow input type values including null type entries", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: Reusable deploy",
+                "on:",
+                "  workflow_call:",
+                "    inputs:",
+                "      region:",
+                "        description: Region",
+                "        type:",
+                "      retries:",
+                "        description: Retries",
+                "        type: integer",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-call-input-type": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(2);
+        expect(
+            result.messages.every(
+                (message) =>
+                    message.ruleId ===
+                    "github-actions/require-workflow-call-input-type"
+            )
+        ).toBeTruthy();
+    });
+
     it("reports missing descriptions for reusable workflow outputs", async () => {
         const result = await lintWorkflow(
             [
@@ -307,6 +575,113 @@ describe("workflow interface rules", () => {
         );
 
         expect(result.messages).toHaveLength(0);
+    });
+
+    it("ignores require-workflow-interface-description when root or on/workflow_call mappings are missing", async () => {
+        const nonMappingRootResult = await lintWorkflow("- workflow_dispatch", {
+            rules: {
+                "github-actions/require-workflow-interface-description":
+                    "error",
+            },
+        });
+
+        const noOnResult = await lintWorkflow(
+            [
+                "name: Deploy",
+                "jobs:",
+                "  deploy:",
+                "    runs-on: ubuntu-latest",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-interface-description":
+                        "error",
+                },
+            }
+        );
+
+        const workflowDispatchWithoutInputsResult = await lintWorkflow(
+            [
+                "name: Deploy",
+                "on:",
+                "  workflow_dispatch:",
+                "    types: [requested]",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-interface-description":
+                        "error",
+                },
+            }
+        );
+
+        const nonMappingWorkflowCallResult = await lintWorkflow(
+            [
+                "name: Deploy",
+                "on:",
+                "  workflow_call: true",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-interface-description":
+                        "error",
+                },
+            }
+        );
+
+        expect(nonMappingRootResult.messages).toHaveLength(0);
+        expect(noOnResult.messages).toHaveLength(0);
+        expect(workflowDispatchWithoutInputsResult.messages).toHaveLength(0);
+        expect(nonMappingWorkflowCallResult.messages).toHaveLength(0);
+    });
+
+    it("reports invalid interface descriptions for non-mapping entries and null or blank values", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: Deploy",
+                "on:",
+                "  workflow_dispatch:",
+                "    inputs:",
+                "      ? [environment]",
+                "      : generated",
+                "      region:",
+                "        description:",
+                "        required: false",
+                "        type: string",
+                "  workflow_call:",
+                "    inputs:",
+                "      config-path:",
+                "        description: '   '",
+                "        required: true",
+                "        type: string",
+                "    outputs:",
+                "      deployment-url:",
+                `        value: ${githubExpression("jobs.deploy.outputs.url")}`,
+                "jobs:",
+                "  deploy:",
+                "    runs-on: ubuntu-latest",
+                "    outputs:",
+                `      url: ${githubExpression("steps.publish.outputs.url")}`,
+                "    steps:",
+                "      - id: publish",
+                '        run: echo "url=https://example.com" >> "$GITHUB_OUTPUT"',
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-interface-description":
+                        "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(3);
+        expect(
+            result.messages.map((message) => message.messageId).sort()
+        ).toEqual([
+            "invalidDescription",
+            "invalidDescription",
+            "missingDescription",
+        ]);
     });
 
     it("reports needs output references to jobs that are not listed in direct needs", async () => {
@@ -627,6 +1002,87 @@ describe("workflow interface rules", () => {
                 "    steps:",
                 "      - id: publish",
                 '        run: echo "url=https://example.com" >> "$GITHUB_OUTPUT"',
+                `      - run: echo "${githubExpression("steps.publish.outputs.url")}"`,
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/no-unknown-step-reference": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("reports unknown step references when a job defines no steps", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: Build",
+                "on: push",
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    outputs:",
+                `      deployment-url: ${githubExpression("steps.publish.outputs.url")}`,
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/no-unknown-step-reference": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(1);
+        expect(result.messages[0]?.ruleId).toBe(
+            "github-actions/no-unknown-step-reference"
+        );
+    });
+
+    it("handles null, non-string, sequence, and alias traversal nodes without false positives", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: Build",
+                "on: push",
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 5",
+                "    note:",
+                "    matrixValues:",
+                `      - ${githubExpression("steps.publish.outputs.url")}`,
+                "    anchors:",
+                "      list: &shared",
+                "        - one",
+                "    aliasList: *shared",
+                "    steps:",
+                "      - id: publish",
+                '        run: echo "url=https://example.com" >> "$GITHUB_OUTPUT"',
+                `      - run: echo "${githubExpression("steps.publish.outputs.url")}"`,
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/no-unknown-step-reference": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("uses the first matching step id when duplicates exist and ignores non-mapping step entries", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: Build",
+                "on: push",
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    steps:",
+                "      - id: publish",
+                '        run: echo "url=https://example.com/one" >> "$GITHUB_OUTPUT"',
+                "      - 123",
+                "      - id: publish",
+                '        run: echo "url=https://example.com/two" >> "$GITHUB_OUTPUT"',
                 `      - run: echo "${githubExpression("steps.publish.outputs.url")}"`,
             ].join("\n"),
             {

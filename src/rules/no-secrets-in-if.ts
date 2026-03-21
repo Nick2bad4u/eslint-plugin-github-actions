@@ -38,7 +38,7 @@ const reportDirectSecretsConditional = (
             scope,
         },
         messageId: "directSecretsInIf",
-        node: (ifPair.value ?? ifPair) as unknown as Rule.Node,
+        node: ifPair.value as unknown as Rule.Node,
     });
 };
 

@@ -54,6 +54,290 @@ describe("require-workflow-concurrency", () => {
         expect(result.messages).toHaveLength(0);
     });
 
+    it("does not require concurrency for events outside the default monitored set", async () => {
+        const result = await lintWorkflow(
+            [
+                "on:",
+                "  schedule:",
+                "    - cron: '0 0 * * *'",
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 10",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-concurrency": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("reports concurrency mappings that omit group", async () => {
+        const result = await lintWorkflow(
+            [
+                "on:",
+                "  push:",
+                "concurrency:",
+                "  cancel-in-progress: true",
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 10",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-concurrency": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(1);
+        expect(result.messages[0]?.message).toContain("group");
+    });
+
+    it("reports blank scalar concurrency values", async () => {
+        const result = await lintWorkflow(
+            [
+                "on:",
+                "  push:",
+                "concurrency: '   '",
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 10",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-concurrency": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(1);
+        expect(result.messages[0]?.message).toContain("concurrency");
+    });
+
+    it("accepts non-empty scalar concurrency values", async () => {
+        const result = await lintWorkflow(
+            [
+                "on:",
+                "  push:",
+                `concurrency: ci-${githubExpression("github.ref")}`,
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 10",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-concurrency": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("reports non-mapping concurrency structures", async () => {
+        const result = await lintWorkflow(
+            [
+                "on:",
+                "  push:",
+                "concurrency:",
+                "  - ci",
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 10",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-concurrency": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(1);
+        expect(result.messages[0]?.message).toContain("concurrency");
+    });
+
+    it("reports mappings with missing cancel-in-progress when required", async () => {
+        const result = await lintWorkflow(
+            [
+                "on:",
+                "  push:",
+                "concurrency:",
+                `  group: ci-${githubExpression("github.ref")}`,
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 10",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-concurrency": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(1);
+        expect(result.messages[0]?.message).toContain("cancel-in-progress");
+    });
+
+    it("accepts mappings without cancel-in-progress when disabled by option", async () => {
+        const result = await lintWorkflow(
+            [
+                "on:",
+                "  push:",
+                "concurrency:",
+                `  group: ci-${githubExpression("github.ref")}`,
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 10",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-concurrency": [
+                        "error",
+                        {
+                            requireCancelInProgress: false,
+                        },
+                    ],
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("reports disabled boolean cancel-in-progress values", async () => {
+        const result = await lintWorkflow(
+            [
+                "on:",
+                "  push:",
+                "concurrency:",
+                `  group: ci-${githubExpression("github.ref")}`,
+                "  cancel-in-progress: false",
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 10",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-concurrency": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(1);
+        expect(result.messages[0]?.message).toContain("cancel-in-progress");
+    });
+
+    it("reports non-scalar cancel-in-progress values", async () => {
+        const result = await lintWorkflow(
+            [
+                "on:",
+                "  push:",
+                "concurrency:",
+                `  group: ci-${githubExpression("github.ref")}`,
+                "  cancel-in-progress:",
+                "    enabled: true",
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 10",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-concurrency": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(1);
+        expect(result.messages[0]?.message).toContain("cancel-in-progress");
+    });
+
+    it("accepts expression cancel-in-progress values", async () => {
+        const result = await lintWorkflow(
+            [
+                "on:",
+                "  push:",
+                "concurrency:",
+                `  group: ci-${githubExpression("github.ref")}`,
+                `  cancel-in-progress: ${githubExpression("github.ref != 'refs/heads/main'")}`,
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 10",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-concurrency": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("supports custom event scopes through onlyForEvents", async () => {
+        const result = await lintWorkflow(
+            [
+                "on:",
+                "  schedule:",
+                "    - cron: '0 0 * * *'",
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 10",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-concurrency": [
+                        "error",
+                        {
+                            onlyForEvents: ["schedule"],
+                        },
+                    ],
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(1);
+        expect(result.messages[0]?.message).toContain("concurrency");
+    });
+
+    it("does not report when onlyForEvents excludes active workflow events", async () => {
+        const result = await lintWorkflow(
+            [
+                "on:",
+                "  push:",
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 10",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/require-workflow-concurrency": [
+                        "error",
+                        {
+                            onlyForEvents: ["schedule"],
+                        },
+                    ],
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
     it("reports unsupported contexts in workflow-level concurrency", async () => {
         const result = await lintWorkflow(
             [
@@ -138,6 +422,136 @@ describe("require-workflow-concurrency", () => {
                 `      cancel-in-progress: ${githubExpression("inputs.environment == 'production'")}`,
                 "    steps:",
                 '      - run: echo "deploy"',
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/no-invalid-concurrency-context": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("reports invalid contexts used in scalar workflow and job concurrency", async () => {
+        const result = await lintWorkflow(
+            [
+                "on:",
+                "  push:",
+                `concurrency: deploy-${githubExpression("secrets.ENVIRONMENT")}`,
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 10",
+                `    concurrency: deploy-${githubExpression("env.BRANCH_NAME")}`,
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/no-invalid-concurrency-context": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(2);
+    });
+
+    it("ignores non-expression and empty concurrency scalar fields", async () => {
+        const result = await lintWorkflow(
+            [
+                "on:",
+                "  push:",
+                "concurrency:",
+                "  group: '   '",
+                "  cancel-in-progress: false",
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 10",
+                "    concurrency: ci-main",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/no-invalid-concurrency-context": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
+    it("ignores invalid-concurrency checks when workflow root is non-mapping or concurrency values are null/non-mapping", async () => {
+        const nonMappingRootResult = await lintWorkflow("- push", {
+            rules: {
+                "github-actions/no-invalid-concurrency-context": "error",
+            },
+        });
+
+        const nullConcurrencyResult = await lintWorkflow(
+            [
+                "on:",
+                "  push:",
+                "concurrency:",
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 10",
+                "    concurrency:",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/no-invalid-concurrency-context": "error",
+                },
+            }
+        );
+
+        const nonMappingConcurrencyResult = await lintWorkflow(
+            [
+                "on:",
+                "  push:",
+                "concurrency:",
+                "  - prod",
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    timeout-minutes: 10",
+                "    concurrency:",
+                "      - prod",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/no-invalid-concurrency-context": "error",
+                },
+            }
+        );
+
+        expect(nonMappingRootResult.messages).toHaveLength(0);
+        expect(nullConcurrencyResult.messages).toHaveLength(0);
+        expect(nonMappingConcurrencyResult.messages).toHaveLength(0);
+    });
+
+    it("handles partial concurrency mappings and jobs without concurrency declarations", async () => {
+        const result = await lintWorkflow(
+            [
+                "on:",
+                "  workflow_dispatch:",
+                "    inputs:",
+                "      target:",
+                "        description: target",
+                "        required: true",
+                "        type: string",
+                "concurrency:",
+                `  group: deploy-${githubExpression("github.ref")}`,
+                "jobs:",
+                "  build:",
+                "    runs-on: ubuntu-latest",
+                "    steps:",
+                "      - run: npm test",
+                "  deploy:",
+                "    runs-on: ubuntu-latest",
+                "    concurrency:",
+                `      cancel-in-progress: ${githubExpression("inputs.target == 'production'")}`,
+                "    steps:",
+                "      - run: echo deploy",
             ].join("\n"),
             {
                 rules: {

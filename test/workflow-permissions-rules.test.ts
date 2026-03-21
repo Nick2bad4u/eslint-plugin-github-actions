@@ -77,4 +77,14 @@ describe("workflow permissions hardening rules", () => {
 
         expect(result.messages).toHaveLength(0);
     });
+
+    it("ignores no-write-all-permissions when workflow root is not a mapping", async () => {
+        const result = await lintWorkflow("- write-all", {
+            rules: {
+                "github-actions/no-write-all-permissions": "error",
+            },
+        });
+
+        expect(result.messages).toHaveLength(0);
+    });
 });
