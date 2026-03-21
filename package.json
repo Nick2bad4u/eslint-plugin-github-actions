@@ -115,6 +115,7 @@
         "lint:yaml:fix": "cross-env NODE_OPTIONS=--max_old_space_size=16384 eslint --cache --cache-strategy content --cache-location .cache/.eslintcache --fix \"**/*.{yml,yaml}\" && echo \"YAML lint (fix) done!\"",
         "madge:circular": "madge --circular --no-spinner --ts-config tsconfig.json --extensions ts,tsx,js,jsx,mjs,cjs,cts,mts ./src --exclude \"(^|[\\/])(test|dist|node_modules|cache|.cache|coverage|build|eslint-inspector|temp|.docusaurus)($|[\\/])|\\.css$\"",
         "prepublishOnly": "npm run release:verify",
+        "release:check": "npm run release:verify",
         "release:verify": "npm run build && npm run lint && npm run typecheck && npm run test && npm run docs:build && npm pack --dry-run",
         "remark:fix": "remark --rc-path .remarkrc.mjs --silently-ignore --ignore-path .remarkignore --frail --quiet --output -- \"*.{md,mdx}\" \"docs/**/*.{md,mdx}\"",
         "sync:peer-eslint-range": "node scripts/sync-peer-eslint-range.mjs",
