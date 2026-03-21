@@ -4,14 +4,15 @@ Linting defaults for workflow-template metadata files (`*.properties.json`).
 
 ## Included rules
 
-- `github-actions/no-empty-template-file-pattern`
-- `github-actions/no-icon-file-extension-in-template-icon-name`
-- `github-actions/no-invalid-template-file-pattern-regex`
-- `github-actions/no-path-separators-in-template-icon-name`
-- `github-actions/no-subdirectory-template-file-pattern`
-- `github-actions/no-universal-template-file-pattern`
-- `github-actions/require-template-categories`
-- `github-actions/require-template-file-patterns`
-- `github-actions/require-template-icon-file-exists`
-- `github-actions/require-template-icon-name`
-- `github-actions/require-workflow-template-properties-pair`
+- [`no-empty-template-file-pattern`](../no-empty-template-file-pattern.md)
+- [`no-icon-file-extension-in-template-icon-name`](../no-icon-file-extension-in-template-icon-name.md)
+- [`no-invalid-template-file-pattern-regex`](../no-invalid-template-file-pattern-regex.md)
+- [`no-path-separators-in-template-icon-name`](../no-path-separators-in-template-icon-name.md)
+- [`no-subdirectory-template-file-pattern`](../no-subdirectory-template-file-pattern.md)
+- [`no-universal-template-file-pattern`](../no-universal-template-file-pattern.md)
+- [`require-template-categories`](../require-template-categories.md)
+- [`require-template-file-patterns`](../require-template-file-patterns.md)
+- [`require-template-icon-file-exists`](../require-template-icon-file-exists.md)
+- [`require-template-icon-name`](../require-template-icon-name.md)
+- [`require-workflow-template-properties-pair`](../require-workflow-template-properties-pair.md)
+

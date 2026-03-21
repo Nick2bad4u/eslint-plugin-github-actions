@@ -85,6 +85,11 @@
     --sb-preset-type-guards: #fb923c;
 }
 
+footer .footer__logo {
+    max-inline-size: 100px;
+    block-size: auto;
+}
+
 [data-theme="dark"] {
     --ifm-color-primary: #2f81f7;
     --ifm-color-primary-dark: #1f6feb;

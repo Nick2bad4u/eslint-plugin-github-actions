@@ -19,6 +19,11 @@ const liveBadges = [
         src: "https://flat.badgen.net/npm/license/eslint-plugin-github-actions-2?color=purple",
     },
     {
+        alt: "npm total downloads",
+        href: "https://www.npmjs.com/package/eslint-plugin-github-actions-2",
+        src: "https://flat.badgen.net/npm/dt/eslint-plugin-github-actions-2?color=pink",
+    },
+    {
         alt: "latest GitHub release",
         href: "https://github.com/Nick2bad4u/eslint-plugin-github-actions-2/releases",
         src: "https://flat.badgen.net/github/release/Nick2bad4u/eslint-plugin-github-actions-2?color=cyan",
@@ -29,9 +34,19 @@ const liveBadges = [
         src: "https://flat.badgen.net/github/stars/Nick2bad4u/eslint-plugin-github-actions-2?color=yellow",
     },
     {
+        alt: "GitHub forks",
+        href: "https://github.com/Nick2bad4u/eslint-plugin-github-actions-2/forks",
+        src: "https://flat.badgen.net/github/forks/Nick2bad4u/eslint-plugin-github-actions-2?color=green",
+    },
+    {
         alt: "GitHub open issues",
         href: "https://github.com/Nick2bad4u/eslint-plugin-github-actions-2/issues",
         src: "https://flat.badgen.net/github/open-issues/Nick2bad4u/eslint-plugin-github-actions-2?color=red",
+    },
+    {
+        alt: "codecov",
+        href: "https://codecov.io/gh/Nick2bad4u/eslint-plugin-github-actions-2",
+        src: "https://codecov.io/gh/Nick2bad4u/eslint-plugin-github-actions-2/branch/main/graph/badge.svg",
     },
 ] as const satisfies readonly LiveBadge[];
 

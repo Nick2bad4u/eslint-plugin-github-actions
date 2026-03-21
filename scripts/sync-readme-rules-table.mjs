@@ -19,11 +19,6 @@ import {
 
 const presetOrder = [...githubActionsConfigNames];
 const rulesSectionHeading = "## Rules";
-const presetDocsUrlBase =
-    "https://nick2bad4u.github.io/eslint-plugin-github-actions-2/docs/rules/presets";
-
-const getPresetDocsPathSegment = (presetName) =>
-    presetName.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
 
 const getReadmePath = () =>
     resolve(fileURLToPath(new URL("..", import.meta.url)), "README.md");
@@ -44,25 +39,6 @@ const getReadmeRulesSectionBounds = (markdown) => {
         endOffset: nextHeadingOffset < 0 ? markdown.length : nextHeadingOffset,
         startOffset,
     };
-};
-
-const getFixIndicator = (ruleModule) => {
-    const fixable = ruleModule.meta?.fixable === "code";
-    const hasSuggestions = ruleModule.meta?.hasSuggestions === true;
-
-    if (fixable && hasSuggestions) {
-        return "🔧 💡";
-    }
-
-    if (fixable) {
-        return "🔧";
-    }
-
-    if (hasSuggestions) {
-        return "💡";
-    }
-
-    return "—";
 };
 
 const normalizePresetName = (reference) => {
@@ -100,24 +76,27 @@ const normalizeRulePresetNames = (ruleModule) => {
     return names;
 };
 
-const createPresetLegendLines = () =>
-    presetOrder.map((presetName) => {
-        const metadata = githubActionsConfigMetadataByName[presetName];
-        const docsUrl = `${presetDocsUrlBase}/${getPresetDocsPathSegment(presetName)}`;
-
-        return `  - [${metadata.icon}](${docsUrl}) — \`github-actions.configs.${presetName}\``;
-    });
-
-const createRuleTableRow = ([ruleName, ruleModule]) => {
-    const docsUrl = ruleModule.meta?.docs?.url;
-    const presetIcons = normalizeRulePresetNames(ruleModule)
-        .map((presetName) => {
+const createMatrixHeaderRow = () =>
+    [
+        "| Rule |",
+        ...presetOrder.map((presetName) => {
             const metadata = githubActionsConfigMetadataByName[presetName];
-            return `[${metadata.icon}](${presetDocsUrlBase}/${getPresetDocsPathSegment(presetName)})`;
-        })
-        .join(" ");
 
-    return `| [\`${ruleName}\`](${docsUrl}) | ${getFixIndicator(ruleModule)} | ${presetIcons || "—"} |`;
+            return ` ${metadata.icon} ${presetName} |`;
+        }),
+    ].join("");
+
+const createMatrixDividerRow = () =>
+    ["| --- |", ...presetOrder.map(() => " :-: |")].join("");
+
+const createRuleMatrixRow = ([ruleName, ruleModule]) => {
+    const docsUrl = ruleModule.meta?.docs?.url;
+    const presetNameSet = new Set(normalizeRulePresetNames(ruleModule));
+    const presetCells = presetOrder.map((presetName) =>
+        presetNameSet.has(presetName) ? " ✅ |" : " — |"
+    );
+
+    return [`| [\`${ruleName}\`](${docsUrl}) |`, ...presetCells].join("");
 };
 
 export const generateReadmeRulesSectionFromRules = (rules) => {
@@ -128,16 +107,11 @@ export const generateReadmeRulesSectionFromRules = (rules) => {
     return [
         rulesSectionHeading,
         "",
-        "- `Fix` legend:",
-        "  - `🔧` = autofixable",
-        "  - `💡` = suggestions available",
-        "  - `—` = report only",
-        "- `Preset key` legend:",
-        ...createPresetLegendLines(),
+        "Rule matrix by preset (matches the presets docs page).",
         "",
-        "| Rule | Fix | Presets |",
-        "| --- | :-: | --- |",
-        ...ruleEntries.map(createRuleTableRow),
+        createMatrixHeaderRow(),
+        createMatrixDividerRow(),
+        ...ruleEntries.map(createRuleMatrixRow),
         "",
     ].join("\n");
 };

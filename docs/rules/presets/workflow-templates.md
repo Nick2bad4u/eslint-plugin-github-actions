@@ -4,18 +4,19 @@ Workflow template package linting for both template YAML and metadata files.
 
 ## Included rules
 
-- `github-actions/no-empty-template-file-pattern`
-- `github-actions/no-hardcoded-default-branch-in-template`
-- `github-actions/no-icon-file-extension-in-template-icon-name`
-- `github-actions/no-invalid-template-file-pattern-regex`
-- `github-actions/no-path-separators-in-template-icon-name`
-- `github-actions/no-subdirectory-template-file-pattern`
-- `github-actions/no-universal-template-file-pattern`
-- `github-actions/prefer-template-yml-extension`
-- `github-actions/require-template-categories`
-- `github-actions/require-template-file-patterns`
-- `github-actions/require-template-icon-file-exists`
-- `github-actions/require-template-icon-name`
-- `github-actions/require-template-workflow-name`
-- `github-actions/require-workflow-template-pair`
-- `github-actions/require-workflow-template-properties-pair`
+- [`no-empty-template-file-pattern`](../no-empty-template-file-pattern.md)
+- [`no-hardcoded-default-branch-in-template`](../no-hardcoded-default-branch-in-template.md)
+- [`no-icon-file-extension-in-template-icon-name`](../no-icon-file-extension-in-template-icon-name.md)
+- [`no-invalid-template-file-pattern-regex`](../no-invalid-template-file-pattern-regex.md)
+- [`no-path-separators-in-template-icon-name`](../no-path-separators-in-template-icon-name.md)
+- [`no-subdirectory-template-file-pattern`](../no-subdirectory-template-file-pattern.md)
+- [`no-universal-template-file-pattern`](../no-universal-template-file-pattern.md)
+- [`prefer-template-yml-extension`](../prefer-template-yml-extension.md)
+- [`require-template-categories`](../require-template-categories.md)
+- [`require-template-file-patterns`](../require-template-file-patterns.md)
+- [`require-template-icon-file-exists`](../require-template-icon-file-exists.md)
+- [`require-template-icon-name`](../require-template-icon-name.md)
+- [`require-template-workflow-name`](../require-template-workflow-name.md)
+- [`require-workflow-template-pair`](../require-workflow-template-pair.md)
+- [`require-workflow-template-properties-pair`](../require-workflow-template-properties-pair.md)
+

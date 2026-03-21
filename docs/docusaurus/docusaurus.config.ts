@@ -104,11 +104,36 @@ const config: Config = {
                     ],
                 },
                 {
-                    title: "📁 Project",
+                    title: "🧭 Presets",
                     items: [
                         {
-                            href: `https://github.com/${organizationName}/${repositoryName}/releases`,
-                            label: "🧾 Releases",
+                            label: "🟡 Recommended",
+                            to: "/docs/rules/presets/recommended",
+                        },
+                        {
+                            label: "🛡️ Security",
+                            to: "/docs/rules/presets/security",
+                        },
+                        {
+                            label: "🔴 Strict",
+                            to: "/docs/rules/presets/strict",
+                        },
+                        {
+                            label: "🟣 All",
+                            to: "/docs/rules/presets/all",
+                        },
+                    ],
+                },
+                {
+                    title: "👨‍💻 Developer",
+                    items: [
+                        {
+                            label: "👨‍💻 Developer API",
+                            to: "/docs/developer/api",
+                        },
+                        {
+                            label: "🏠 Docs home",
+                            to: "/docs",
                         },
                         {
                             href: `https://nick2bad4u.github.io/${repositoryName}/eslint-inspector/`,
@@ -121,7 +146,7 @@ const config: Config = {
                     ],
                 },
                 {
-                    title: "⚙️ Support",
+                    title: "📁 Project",
                     items: [
                         {
                             href: `https://github.com/${organizationName}/${repositoryName}`,
@@ -130,6 +155,10 @@ const config: Config = {
                         {
                             href: `https://github.com/${organizationName}/${repositoryName}/issues`,
                             label: "🐛 Report issues",
+                        },
+                        {
+                            href: `https://github.com/${organizationName}/${repositoryName}/releases`,
+                            label: "🧾 Releases",
                         },
                         {
                             href: `https://www.npmjs.com/package/${npmPackageName}`,
@@ -154,15 +183,15 @@ const config: Config = {
                     type: "dropdown",
                     items: [
                         {
-                            label: "• Overview",
+                            label: "🏁 Overview",
                             to: "/docs/rules/overview",
                         },
                         {
-                            label: "• Getting started",
+                            label: "🚀 Getting started",
                             to: "/docs/rules/getting-started",
                         },
                         {
-                            label: "• Presets",
+                            label: "🧭 Presets",
                             to: "/docs/rules/presets",
                         },
                     ],
@@ -173,19 +202,19 @@ const config: Config = {
                     type: "dropdown",
                     items: [
                         {
-                            label: "• Rule reference",
+                            label: "📏 Rule reference",
                             to: "/docs/rules",
                         },
                         {
-                            label: "• Workflow rules",
+                            label: "📄 Workflow rules",
                             to: "/docs/rules/category/workflow-rules",
                         },
                         {
-                            label: "• Action metadata rules",
+                            label: "🧩 Action metadata rules",
                             to: "/docs/rules/category/action-metadata-rules",
                         },
                         {
-                            label: "• Workflow template rules",
+                            label: "🧱 Workflow template rules",
                             to: "/docs/rules/category/workflow-template-rules",
                         },
                     ],
@@ -196,34 +225,43 @@ const config: Config = {
                     type: "dropdown",
                     items: [
                         {
-                            label: "• Preset reference",
+                            label: "🧭 Preset reference",
                             to: "/docs/rules/presets",
                         },
                         {
-                            label: "• Recommended",
+                            label: "🟡 Recommended",
                             to: "/docs/rules/presets/recommended",
                         },
                         {
-                            label: "• Security",
+                            label: "🛡️ Security",
                             to: "/docs/rules/presets/security",
                         },
                         {
-                            label: "• Strict",
+                            label: "🔴 Strict",
                             to: "/docs/rules/presets/strict",
                         },
                         {
-                            label: "• All",
+                            label: "🟣 All",
                             to: "/docs/rules/presets/all",
                         },
                         {
-                            label: "• Action metadata",
+                            label: "🧩 Action metadata",
                             to: "/docs/rules/presets/action-metadata",
                         },
                         {
-                            label: "• Workflow templates",
+                            label: "🗂️ Workflow template properties",
+                            to: "/docs/rules/presets/workflow-template-properties",
+                        },
+                        {
+                            label: "🧱 Workflow templates",
                             to: "/docs/rules/presets/workflow-templates",
                         },
                     ],
+                },
+                {
+                    to: "/docs/developer/api",
+                    label: "👨‍💻 Developer docs",
+                    position: "right",
                 },
                 {
                     href: `https://github.com/${organizationName}/${repositoryName}`,
@@ -248,7 +286,15 @@ const config: Config = {
             theme: prismThemes.github,
         },
     },
-    themes: ["@docusaurus/theme-mermaid"],
+    themes: [
+        "@docusaurus/theme-mermaid",
+        [
+            "@easyops-cn/docusaurus-search-local",
+            {
+                hashed: true,
+            },
+        ],
+    ],
     title: npmPackageName,
     url: "https://nick2bad4u.github.io",
 };

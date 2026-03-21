@@ -112,6 +112,7 @@ const mdxEscapeMap = Object.freeze({
 
 const hasMdxUnsafeCharacterPattern = /[<>{}]/u;
 const mdxUnsafeCharacterPattern = /[<>{}]/gu;
+const typedocSidebarIdPrefixPattern = /id:"\.\.\/site-docs\//gu;
 
 /**
  * Parse a fenced-code marker from a trimmed markdown line.
@@ -243,6 +244,32 @@ function sanitizeTypedocMarkdownOutput(outputDirectoryPath) {
 }
 
 /**
+ * Normalize generated TypeDoc sidebar IDs for Docusaurus docs ids.
+ *
+ * The generated sidebar may include ids prefixed with `../site-docs/`, while
+ * Docusaurus docs ids are rooted from `site-docs` (for example,
+ * `developer/api/index`).
+ *
+ * @param {string} outputDirectoryPath - Absolute TypeDoc output directory.
+ */
+function sanitizeTypedocSidebar(outputDirectoryPath) {
+    const typedocSidebarPath = resolve(outputDirectoryPath, "typedoc-sidebar.cjs");
+
+    if (!existsSync(typedocSidebarPath)) {
+        return;
+    }
+
+    const previousContent = readFileSync(typedocSidebarPath, "utf8");
+    const nextContent = previousContent.replace(typedocSidebarIdPrefixPattern, 'id:"');
+
+    if (nextContent === previousContent) {
+        return;
+    }
+
+    writeFileSync(typedocSidebarPath, nextContent, "utf8");
+}
+
+/**
  * Pick an unused drive letter suitable for a temporary `subst` mapping.
  *
  * @returns {string} Drive letter (without colon).
@@ -327,3 +354,4 @@ if (process.platform === "win32" && /[()]/u.test(repositoryRoot)) {
 }
 
 sanitizeTypedocMarkdownOutput(typedocOutputDirectory);
+sanitizeTypedocSidebar(typedocOutputDirectory);
