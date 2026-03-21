@@ -246,6 +246,23 @@ describe("workflow metadata rules", () => {
         expect(ignoredNameResult.messages).toHaveLength(0);
     });
 
+    it("accepts case-police canonical title words with default casing", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: GitHub Actions HTTP API",
+                "on:",
+                "  push:",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/action-name-casing": "error",
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
     it("falls back to the default casing when object options enable no casings", async () => {
         const result = await lintWorkflow(
             [
@@ -285,6 +302,27 @@ describe("workflow metadata rules", () => {
         );
 
         expect(result.output).toContain("name: Release Pipeline");
+    });
+
+    it("autofixes known case-police words in title casing", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: git hub actions http api",
+                "on:",
+                "  push:",
+            ].join("\n"),
+            {
+                fix: true,
+                rules: {
+                    "github-actions/action-name-casing": [
+                        "error",
+                        "Title Case",
+                    ],
+                },
+            }
+        );
+
+        expect(result.output).toContain("name: GitHub Actions HTTP API");
     });
 
     it("reports invalid workflow trigger events", async () => {

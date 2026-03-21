@@ -43,6 +43,15 @@ describe("casing helpers", () => {
         ).toBe("release2026build");
     });
 
+    it("respects case-police canonical brand and acronym spellings for title styles", () => {
+        expect(
+            convertToGithubActionsCasing("git hub actions", "Title Case")
+        ).toBe("GitHub Actions");
+        expect(convertToGithubActionsCasing("wifi setup", "Train-Case")).toBe(
+            "Wi-Fi-Setup"
+        );
+    });
+
     it("checks whether an input already matches a requested casing style", () => {
         expect(
             matchesGithubActionsCasing("build-release", "kebab-case")

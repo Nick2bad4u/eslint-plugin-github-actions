@@ -76,6 +76,32 @@ describe("job identity rules", () => {
         expect(result.messages).toHaveLength(0);
     });
 
+    it("accepts case-police canonical Train-Case job ids", async () => {
+        const result = await lintWorkflow(
+            [
+                "name: CI",
+                "on:",
+                "  push:",
+                "jobs:",
+                "  GitHub-Build:",
+                "    runs-on: ubuntu-latest",
+                "    name: Build App",
+            ].join("\n"),
+            {
+                rules: {
+                    "github-actions/job-id-casing": [
+                        "error",
+                        {
+                            "Train-Case": true,
+                        },
+                    ],
+                },
+            }
+        );
+
+        expect(result.messages).toHaveLength(0);
+    });
+
     it("falls back to default casing when no casing flags are enabled", async () => {
         const result = await lintWorkflow(
             [
