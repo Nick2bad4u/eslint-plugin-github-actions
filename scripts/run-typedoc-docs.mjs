@@ -253,14 +253,20 @@ function sanitizeTypedocMarkdownOutput(outputDirectoryPath) {
  * @param {string} outputDirectoryPath - Absolute TypeDoc output directory.
  */
 function sanitizeTypedocSidebar(outputDirectoryPath) {
-    const typedocSidebarPath = resolve(outputDirectoryPath, "typedoc-sidebar.cjs");
+    const typedocSidebarPath = resolve(
+        outputDirectoryPath,
+        "typedoc-sidebar.cjs"
+    );
 
     if (!existsSync(typedocSidebarPath)) {
         return;
     }
 
     const previousContent = readFileSync(typedocSidebarPath, "utf8");
-    const nextContent = previousContent.replace(typedocSidebarIdPrefixPattern, 'id:"');
+    const nextContent = previousContent.replace(
+        typedocSidebarIdPrefixPattern,
+        'id:"'
+    );
 
     if (nextContent === previousContent) {
         return;

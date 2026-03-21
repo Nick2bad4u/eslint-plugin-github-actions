@@ -1,8 +1,12 @@
 ---
 slug: docs-polish-pass
 title: Docs polish pass (developer docs, sidebar, and IA)
-authors: [nick2bad4u]
-tags: [docs, docusaurus, typedoc]
+authors:
+  - nick2bad4u
+tags:
+  - docs
+  - docusaurus
+  - typedoc
 ---
 
 We shipped a docs polish pass focused on developer experience:
