@@ -16,7 +16,7 @@ const liveBadges = [
     {
         alt: "npm license",
         href: "https://github.com/Nick2bad4u/eslint-plugin-github-actions/blob/main/LICENSE",
-        src: "https://flat.badgen.net/npm/license/eslint-plugin-github-actions?color=purple",
+        src: "https://flat.badgen.net/npm/license/eslint-plugin-github-actions-2?color=purple",
     },
     {
         alt: "latest GitHub release",
