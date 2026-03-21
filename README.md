@@ -1,6 +1,6 @@
-# eslint-plugin-github-actions
+# eslint-plugin-github-actions-2
 
-[![npm license.](https://flat.badgen.net/npm/license/eslint-plugin-github-actions?color=purple)](https://github.com/Nick2bad4u/eslint-plugin-github-actions/blob/main/LICENSE) [![latest GitHub release.](https://flat.badgen.net/github/release/Nick2bad4u/eslint-plugin-github-actions?color=cyan)](https://github.com/Nick2bad4u/eslint-plugin-github-actions/releases) [![GitHub stars.](https://flat.badgen.net/github/stars/Nick2bad4u/eslint-plugin-github-actions?color=yellow)](https://github.com/Nick2bad4u/eslint-plugin-github-actions/stargazers)
+[![npm license.](https://flat.badgen.net/npm/license/eslint-plugin-github-actions-2?color=purple)](https://github.com/Nick2bad4u/eslint-plugin-github-actions/blob/main/LICENSE) [![latest GitHub release.](https://flat.badgen.net/github/release/Nick2bad4u/eslint-plugin-github-actions?color=cyan)](https://github.com/Nick2bad4u/eslint-plugin-github-actions/releases) [![GitHub stars.](https://flat.badgen.net/github/stars/Nick2bad4u/eslint-plugin-github-actions?color=yellow)](https://github.com/Nick2bad4u/eslint-plugin-github-actions/stargazers)
 
 ESLint plugin for GitHub Actions workflow quality, reliability, and security.
 
@@ -26,13 +26,13 @@ Rules help teams:
 ## Installation
 
 ```sh
-npm install --save-dev eslint eslint-plugin-github-actions
+npm install --save-dev eslint eslint-plugin-github-actions-2
 ```
 
 ## Quick start
 
 ```js
-import githubActions from "eslint-plugin-github-actions";
+import githubActions from "eslint-plugin-github-actions-2";
 
 export default [githubActions.configs.recommended];
 ```
@@ -172,4 +172,4 @@ jobs:
 
 ## Status
 
-`eslint-plugin-github-actions` ships workflow, action metadata, and workflow-template linting surfaces with policy, reliability, and security coverage.
+`eslint-plugin-github-actions-2` ships workflow, action metadata, and workflow-template linting surfaces with policy, reliability, and security coverage.

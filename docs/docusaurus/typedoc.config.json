@@ -517,7 +517,7 @@
         "@sealed",
         "@virtual"
     ],
-    "name": "eslint-plugin-github-actions Documentation",
+    "name": "eslint-plugin-github-actions-2 Documentation",
     "navigation": {
         "compactFolders": false,
         "excludeReferences": false,

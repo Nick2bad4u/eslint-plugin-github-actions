@@ -1,6 +1,6 @@
 /**
  * @packageDocumentation
- * Canonical preset names and docs references used by eslint-plugin-github-actions.
+ * Canonical preset names and docs references used by eslint-plugin-github-actions-2.
  */
 import {
     ACTION_METADATA_FILE_GLOBS,

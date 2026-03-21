@@ -10,7 +10,7 @@
             "downloads": true,
             "stars": true
         },
-        "npmPackageName": "eslint-plugin-github-actions"
+        "npmPackageName": "eslint-plugin-github-actions-2"
     },
     "list": [
         "npmversion",

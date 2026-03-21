@@ -85,7 +85,7 @@ const homeCards = [
     },
 ] as const satisfies readonly HomeCard[];
 
-/** Render the Docusaurus landing page for eslint-plugin-github-actions. */
+/** Render the Docusaurus landing page for eslint-plugin-github-actions-2. */
 export default function Home() {
     const logoSrc = useBaseUrl("/img/logo.svg");
     const cardLinkClassName = styles["cardLink"] ?? "";
@@ -94,8 +94,8 @@ export default function Home() {
 
     return (
         <Layout
-            title="eslint-plugin-github-actions docs"
-            description="Documentation for eslint-plugin-github-actions"
+            title="eslint-plugin-github-actions-2 docs"
+            description="Documentation for eslint-plugin-github-actions-2"
         >
             <header className={styles["heroBanner"]}>
                 <div className={`container ${styles["heroContent"]}`}>
@@ -106,7 +106,7 @@ export default function Home() {
                                 GitHub Actions automation
                             </p>
                             <Heading as="h1" className={styles["heroTitle"]}>
-                                eslint-plugin-github-actions
+                                eslint-plugin-github-actions-2
                             </Heading>
                             <p className={styles["heroSubtitle"]}>
                                 Focused ESLint rules for workflow YAML files,
@@ -182,7 +182,7 @@ export default function Home() {
 
                         <aside className={styles["heroPanel"]}>
                             <img
-                                alt="eslint-plugin-github-actions logo"
+                                alt="eslint-plugin-github-actions-2 logo"
                                 className={styles["heroPanelLogo"]}
                                 decoding="async"
                                 height="240"

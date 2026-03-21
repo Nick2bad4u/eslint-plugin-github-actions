@@ -1,6 +1,6 @@
 # Support
 
-Thanks for using `eslint-plugin-github-actions`.
+Thanks for using `eslint-plugin-github-actions-2`.
 
 ## How to get help
 
@@ -19,7 +19,7 @@ Please include:
 - Node.js version
 - TypeScript version
 - ESLint version
-- `eslint-plugin-github-actions` version
+- `eslint-plugin-github-actions-2` version
 - Minimal reproduction snippet
 - Expected behavior and actual behavior
 

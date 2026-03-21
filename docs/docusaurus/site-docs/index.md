@@ -1,6 +1,6 @@
 # Docs home
 
-Welcome to the documentation site for `eslint-plugin-github-actions`.
+Welcome to the documentation site for `eslint-plugin-github-actions-2`.
 
 - Start here: [Getting started](pathname:///docs/rules/getting-started)
 - Rule reference: [All rules](pathname:///docs/rules)

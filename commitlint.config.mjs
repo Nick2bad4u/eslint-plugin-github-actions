@@ -1,5 +1,5 @@
 /**
- * Commitlint configuration for eslint-plugin-github-actions.
+ * Commitlint configuration for eslint-plugin-github-actions-2.
  *
  * Enforces the repository's hybrid Gitmoji format, e.g.:
  *

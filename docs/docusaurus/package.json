@@ -1,9 +1,9 @@
 {
     "$schema": "https://www.schemastore.org/package.json",
-    "name": "@eslint-plugin-github-actions/docs",
+    "name": "@eslint-plugin-github-actions-2/docs",
     "version": "0.1.0",
     "private": true,
-    "description": "Docusaurus documentation site for eslint-plugin-github-actions.",
+    "description": "Docusaurus documentation site for eslint-plugin-github-actions-2.",
     "keywords": [
         "docusaurus",
         "documentation",

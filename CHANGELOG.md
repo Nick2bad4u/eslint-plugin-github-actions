@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `eslint-plugin-github-actions` will be documented in this file.
+All notable changes to `eslint-plugin-github-actions-2` will be documented in this file.
 
 ## Unreleased
 

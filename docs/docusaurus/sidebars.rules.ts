@@ -161,7 +161,7 @@ const sidebars: SidebarsConfig = {
             label: "📚 Rule reference",
             link: {
                 description:
-                    "Reference documentation for every eslint-plugin-github-actions rule.",
+                    "Reference documentation for every eslint-plugin-github-actions-2 rule.",
                 slug: "/",
                 title: "Rule reference",
                 type: "generated-index",

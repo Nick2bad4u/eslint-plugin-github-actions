@@ -69,7 +69,7 @@ changes are merged.
 ## ESLint flat config example
 
 ```ts
-import githubActions from "eslint-plugin-github-actions";
+import githubActions from "eslint-plugin-github-actions-2";
 
 export default [
   {

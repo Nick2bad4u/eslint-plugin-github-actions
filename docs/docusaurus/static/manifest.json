@@ -1,20 +1,16 @@
 {
     "background_color": "#2E2A33",
-    "description": "eslint-plugin-github-actions documentation and rule references.",
+    "description": "eslint-plugin-github-actions-2 documentation and rule references.",
     "display": "standalone",
     "icons": [
         {
-            "sizes": "192x192",
-            "src": "img/logo_192x192.png",
-            "type": "image/png"
-        },
-        {
-            "sizes": "512x512",
-            "src": "img/logo.png",
-            "type": "image/png"
+            "purpose": "any maskable",
+            "sizes": "any",
+            "src": "img/logo.svg",
+            "type": "image/svg+xml"
         }
     ],
-    "name": "eslint-plugin-github-actions Documentation",
+    "name": "eslint-plugin-github-actions-2 Documentation",
     "scope": ".",
     "short_name": "Actions Docs",
     "start_url": ".",

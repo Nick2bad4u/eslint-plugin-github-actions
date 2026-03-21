@@ -3,7 +3,7 @@
 
 /**
  * @packageDocumentation
- * ESLint 9 compatibility smoke checks for eslint-plugin-github-actions presets.
+ * ESLint 9 compatibility smoke checks for eslint-plugin-github-actions-2 presets.
  */
 
 import { ESLint } from "eslint";

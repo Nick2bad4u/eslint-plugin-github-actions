@@ -35,7 +35,7 @@ fixes.
 
 ## Security Best Practices for Users
 
-- Keep `eslint-plugin-github-actions`, ESLint, TypeScript, and dependencies updated.
+- Keep `eslint-plugin-github-actions-2`, ESLint, TypeScript, and dependencies updated.
 - Run linting in CI on trusted code only.
 - Review new rule autofixes before applying at scale.
 

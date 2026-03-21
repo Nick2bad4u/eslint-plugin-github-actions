@@ -6,13 +6,13 @@ navigate to the rule and preset reference docs.
 ## Install
 
 ```sh
-npm install --save-dev eslint eslint-plugin-github-actions
+npm install --save-dev eslint eslint-plugin-github-actions-2
 ```
 
 ## Flat config example
 
 ```js
-import githubActions from "eslint-plugin-github-actions";
+import githubActions from "eslint-plugin-github-actions-2";
 
 export default [githubActions.configs.recommended];
 ```

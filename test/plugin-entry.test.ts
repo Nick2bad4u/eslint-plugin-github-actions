@@ -5,7 +5,7 @@ import githubActionsPlugin from "../src/plugin.js";
 describe("plugin entry", () => {
     it("exports GitHub Actions plugin metadata", () => {
         expect(githubActionsPlugin.meta).toMatchObject({
-            name: "eslint-plugin-github-actions",
+            name: "eslint-plugin-github-actions-2",
             namespace: "github-actions",
         });
     });

@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest a new rule or improvement for eslint-plugin-github-actions
+about: Suggest a new rule or improvement for eslint-plugin-github-actions-2
 title: "[Feature]: "
 labels: [enhancement]
 assignees: []

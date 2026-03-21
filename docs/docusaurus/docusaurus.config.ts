@@ -10,7 +10,9 @@ const baseUrl =
 /** Repository owner used for edit links. */
 const organizationName = "Nick2bad4u";
 /** Repository name used for edit links and project metadata. */
-const projectName = "eslint-plugin-github-actions";
+const repositoryName = "eslint-plugin-github-actions";
+/** Published npm package name. */
+const npmPackageName = "eslint-plugin-github-actions-2";
 
 /** Full Docusaurus site configuration. */
 const config: Config = {
@@ -34,7 +36,7 @@ const config: Config = {
         [
             "@docusaurus/plugin-content-docs",
             {
-                editUrl: `https://github.com/${organizationName}/${projectName}/blob/main/docs/`,
+                editUrl: `https://github.com/${organizationName}/${repositoryName}/blob/main/docs/`,
                 id: "rules",
                 path: "../rules",
                 routeBasePath: "docs/rules",
@@ -48,7 +50,7 @@ const config: Config = {
             {
                 blog: false,
                 docs: {
-                    editUrl: `https://github.com/${organizationName}/${projectName}/blob/main/docs/docusaurus/`,
+                    editUrl: `https://github.com/${organizationName}/${repositoryName}/blob/main/docs/docusaurus/`,
                     path: "site-docs",
                     routeBasePath: "docs",
                     sidebarPath: "./sidebars.ts",
@@ -59,7 +61,7 @@ const config: Config = {
             } satisfies Preset.Options,
         ],
     ],
-    projectName,
+    projectName: repositoryName,
     tagline:
         "ESLint rules for GitHub Actions workflows, action metadata, and workflow templates.",
     themeConfig: {
@@ -105,15 +107,15 @@ const config: Config = {
                     title: "📁 Project",
                     items: [
                         {
-                            href: `https://github.com/${organizationName}/${projectName}/releases`,
+                            href: `https://github.com/${organizationName}/${repositoryName}/releases`,
                             label: "🧾 Releases",
                         },
                         {
-                            href: `https://nick2bad4u.github.io/${projectName}/eslint-inspector/`,
+                            href: `https://nick2bad4u.github.io/${repositoryName}/eslint-inspector/`,
                             label: "🔎 ESLint Inspector",
                         },
                         {
-                            href: `https://nick2bad4u.github.io/${projectName}/stylelint-inspector/`,
+                            href: `https://nick2bad4u.github.io/${repositoryName}/stylelint-inspector/`,
                             label: "🎨 Stylelint Inspector",
                         },
                     ],
@@ -122,23 +124,23 @@ const config: Config = {
                     title: "⚙️ Support",
                     items: [
                         {
-                            href: `https://github.com/${organizationName}/${projectName}`,
+                            href: `https://github.com/${organizationName}/${repositoryName}`,
                             label: "🐙 GitHub repository",
                         },
                         {
-                            href: `https://github.com/${organizationName}/${projectName}/issues`,
+                            href: `https://github.com/${organizationName}/${repositoryName}/issues`,
                             label: "🐛 Report issues",
                         },
                         {
-                            href: `https://www.npmjs.com/package/${projectName}`,
+                            href: `https://www.npmjs.com/package/${npmPackageName}`,
                             label: "📦 NPM package",
                         },
                     ],
                 },
             ],
             logo: {
-                alt: "eslint-plugin-github-actions logo",
-                href: `https://github.com/${organizationName}/${projectName}`,
+                alt: "eslint-plugin-github-actions-2 logo",
+                href: `https://github.com/${organizationName}/${repositoryName}`,
                 src: "img/logo.svg",
             },
             style: "dark",
@@ -224,16 +226,16 @@ const config: Config = {
                     ],
                 },
                 {
-                    href: `https://github.com/${organizationName}/${projectName}`,
+                    href: `https://github.com/${organizationName}/${repositoryName}`,
                     label: "🐙 GitHub",
                     position: "right",
                 },
             ],
             logo: {
-                alt: "eslint-plugin-github-actions logo",
+                alt: "eslint-plugin-github-actions-2 logo",
                 src: "img/logo.svg",
             },
-            title: "eslint-plugin-github-actions",
+            title: npmPackageName,
         },
         prism: {
             additionalLanguages: [
@@ -247,7 +249,7 @@ const config: Config = {
         },
     },
     themes: ["@docusaurus/theme-mermaid"],
-    title: "eslint-plugin-github-actions",
+    title: npmPackageName,
     url: "https://nick2bad4u.github.io",
 };
 

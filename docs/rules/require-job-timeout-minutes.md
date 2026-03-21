@@ -53,7 +53,7 @@ For larger repositories, this rule is often enabled together with one of the pub
 ## ESLint flat config example
 
 ```ts
-import githubActions from "eslint-plugin-github-actions";
+import githubActions from "eslint-plugin-github-actions-2";
 
 export default [
   {

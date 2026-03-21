@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a reproducible bug in eslint-plugin-github-actions
+about: Report a reproducible bug in eslint-plugin-github-actions-2
 title: "[Bug]: "
 labels: [bug]
 assignees: []
@@ -20,7 +20,7 @@ Describe what you expected to happen.
 
 ## Environment
 
-- `eslint-plugin-github-actions` version/commit:
+- `eslint-plugin-github-actions-2` version/commit:
 - ESLint version:
 - Node.js version:
 

@@ -1,6 +1,6 @@
 /**
  * @packageDocumentation
- * Public plugin entrypoint for eslint-plugin-github-actions.
+ * Public plugin entrypoint for eslint-plugin-github-actions-2.
  */
 import type { ESLint, Linter, Rule } from "eslint";
 
@@ -35,7 +35,7 @@ export type GithubActionsPresetConfig = Linter.Config & {
 /** Fully-qualified ESLint rule ids exposed by this plugin. */
 export type GithubActionsRuleId = `github-actions/${GithubActionsRuleName}`;
 
-/** Unqualified rule names supported by eslint-plugin-github-actions. */
+/** Unqualified rule names supported by eslint-plugin-github-actions-2. */
 export type GithubActionsRuleName = keyof typeof githubActionsRules;
 
 /** Fully assembled plugin contract used by the runtime default export. */
@@ -228,7 +228,7 @@ const githubActionsConfigs: GithubActionsConfigs =
 const githubActionsPlugin: GithubActionsPluginContract = {
     configs: githubActionsConfigs,
     meta: {
-        name: "eslint-plugin-github-actions",
+        name: "eslint-plugin-github-actions-2",
         namespace: "github-actions",
         version: getPackageVersion(packageJson),
     },

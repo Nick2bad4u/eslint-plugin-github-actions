@@ -1,6 +1,6 @@
 /**
  * @packageDocumentation
- * Central rule registry for eslint-plugin-github-actions.
+ * Central rule registry for eslint-plugin-github-actions-2.
  */
 import type { Rule } from "eslint";
 

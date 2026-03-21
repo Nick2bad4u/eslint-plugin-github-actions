@@ -1,6 +1,6 @@
 # `githubActions.configs.all`
 
-Enables every available rule published by `eslint-plugin-github-actions`.
+Enables every available rule published by `eslint-plugin-github-actions-2`.
 
 ## Included rules
 
