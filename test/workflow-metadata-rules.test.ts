@@ -310,9 +310,9 @@ describe("workflow metadata rules", () => {
             outputName: "XML HTTP Request Validation",
         },
         {
-            inputName: "& release pipeline",
-            name: "autofixes names that begin with a preserved symbol",
-            outputName: "& Release Pipeline",
+            inputName: '"build & & test"',
+            name: "autofixes names with consecutive preserved symbols",
+            outputName: "Build & & Test",
         },
     ])("$name", async ({ inputName, outputName }) => {
         expect.hasAssertions();
