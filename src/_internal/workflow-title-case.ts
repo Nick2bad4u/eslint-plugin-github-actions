@@ -47,6 +47,8 @@ const workflowTitleCaseDictionary: Readonly<Record<string, string>> = {
     ci: "CI",
 };
 
+type AppendTitleCaseToken = (token: TitleCaseToken) => void;
+
 interface CaseDictionaryMatch {
     readonly canonical: string;
     readonly tokenCount: number;
@@ -84,63 +86,102 @@ const isLowercaseCharacter = (character: string): boolean => {
     return codePoint >= 97 && codePoint <= 122;
 };
 
-const splitIntoTitleCaseTokens = (value: string): readonly TitleCaseToken[] => {
-    const tokens: TitleCaseToken[] = [];
-    let currentWord = "";
+const startsNewTitleCaseWord = (
+    value: string,
+    index: number,
+    currentWord: string,
+    character: string
+): boolean => {
+    if (index === 0 || currentWord.length === 0) {
+        return false;
+    }
 
-    const flushCurrentWord = (): void => {
-        if (currentWord.length === 0) {
-            return;
-        }
+    const previousCharacter = value[index - 1];
 
-        tokens.push({
+    if (!isDefined(previousCharacter)) {
+        return false;
+    }
+
+    if (
+        isLowercaseCharacter(previousCharacter) &&
+        isUppercaseCharacter(character)
+    ) {
+        return true;
+    }
+
+    const nextCharacter = value[index + 1];
+
+    return (
+        isUppercaseCharacter(previousCharacter) &&
+        isUppercaseCharacter(character) &&
+        isDefined(nextCharacter) &&
+        isLowercaseCharacter(nextCharacter)
+    );
+};
+
+const appendTitleCaseWord = (
+    appendToken: AppendTitleCaseToken,
+    currentWord: string
+): void => {
+    if (currentWord.length > 0) {
+        appendToken({
             kind: "word",
             value: currentWord.toLowerCase(),
         });
-        currentWord = "";
+    }
+};
+
+const consumeTitleCaseCharacter = (
+    appendToken: AppendTitleCaseToken,
+    value: string,
+    index: number,
+    currentWord: string,
+    character: string
+): string => {
+    if (isAlphaNumericCharacter(character)) {
+        if (startsNewTitleCaseWord(value, index, currentWord, character)) {
+            appendTitleCaseWord(appendToken, currentWord);
+
+            return character;
+        }
+
+        return currentWord + character;
+    }
+
+    appendTitleCaseWord(appendToken, currentWord);
+
+    if (character === "&") {
+        appendToken({
+            kind: "symbol",
+            value: character,
+        });
+    }
+
+    return "";
+};
+
+const splitIntoTitleCaseTokens = (value: string): readonly TitleCaseToken[] => {
+    const tokens: TitleCaseToken[] = [];
+    const appendToken: AppendTitleCaseToken = (token) => {
+        tokens.push(token);
     };
+    let currentWord = "";
 
     for (let index = 0; index < value.length; index += 1) {
         const character = value[index];
 
-        if (!isDefined(character)) {
-            continue;
+        if (isDefined(character)) {
+            currentWord = consumeTitleCaseCharacter(
+                appendToken,
+                value,
+                index,
+                currentWord,
+                character
+            );
         }
-
-        if (!isAlphaNumericCharacter(character)) {
-            flushCurrentWord();
-
-            if (character === "&") {
-                tokens.push({
-                    kind: "symbol",
-                    value: character,
-                });
-            }
-
-            continue;
-        }
-
-        const previousCharacter = index > 0 ? value[index - 1] : undefined;
-        const nextCharacter =
-            index + 1 < value.length ? value[index + 1] : undefined;
-        const isStartsNewWord =
-            currentWord.length > 0 &&
-            isDefined(previousCharacter) &&
-            ((isLowercaseCharacter(previousCharacter) &&
-                isUppercaseCharacter(character)) ||
-                (isUppercaseCharacter(previousCharacter) &&
-                    isUppercaseCharacter(character) &&
-                    isDefined(nextCharacter) &&
-                    isLowercaseCharacter(nextCharacter)));
-
-        if (isStartsNewWord) {
-            flushCurrentWord();
-        }
-
-        currentWord += character;
     }
 
-    flushCurrentWord();
+    appendTitleCaseWord(appendToken, currentWord);
 
     return tokens;
 };
@@ -204,6 +245,44 @@ const buildCaseDictionaryIndex = (): {
 
 const caseDictionaryIndex = buildCaseDictionaryIndex();
 
+const findCaseDictionaryMatch = (
+    words: readonly string[],
+    startIndex: number
+): CaseDictionaryMatch | undefined => {
+    const remainingWordCount = words.length - startIndex;
+    const maxSpan = Math.min(
+        caseDictionaryIndex.maxTokenSpan,
+        remainingWordCount
+    );
+
+    for (let tokenCount = maxSpan; tokenCount >= 1; tokenCount -= 1) {
+        const collapsedCandidate = arrayJoin(
+            words.slice(startIndex, startIndex + tokenCount),
+            ""
+        );
+        const candidateMatches =
+            caseDictionaryIndex.matchesByCollapsedKey.get(collapsedCandidate);
+
+        if (!isDefined(candidateMatches)) {
+            continue;
+        }
+
+        const selectedMatch =
+            candidateMatches.find(
+                (candidateMatch) => candidateMatch.tokenCount === tokenCount
+            ) ?? arrayFirst(candidateMatches);
+
+        if (isDefined(selectedMatch)) {
+            return {
+                canonical: selectedMatch.canonical,
+                tokenCount,
+            };
+        }
+    }
+
+    return undefined;
+};
+
 const resolveTitleSegments = (
     words: readonly string[],
     startWordIndex: number,
@@ -212,66 +291,27 @@ const resolveTitleSegments = (
     const segments: string[] = [];
 
     for (let index = 0; index < words.length;) {
-        const remainingWordCount = words.length - index;
-        const maxSpan = Math.min(
-            caseDictionaryIndex.maxTokenSpan,
-            remainingWordCount
-        );
-        let isMatched = false;
+        const dictionaryMatch = findCaseDictionaryMatch(words, index);
 
-        for (let span = maxSpan; span >= 1; span -= 1) {
-            const collapsedCandidate = arrayJoin(
-                words.slice(index, index + span),
-                ""
-            );
-            const candidateMatches =
-                caseDictionaryIndex.matchesByCollapsedKey.get(
-                    collapsedCandidate
+        if (isDefined(dictionaryMatch)) {
+            segments.push(dictionaryMatch.canonical);
+        } else {
+            const currentWord = words[index];
+
+            if (isDefined(currentWord)) {
+                const absoluteWordIndex = startWordIndex + index;
+
+                segments.push(
+                    setHas(titleCaseSmallWords, currentWord) &&
+                        absoluteWordIndex > 0 &&
+                        absoluteWordIndex < totalWordCount - 1
+                        ? currentWord
+                        : capitalizeWord(currentWord)
                 );
-
-            if (!isDefined(candidateMatches)) {
-                continue;
             }
-
-            const exactTokenCountMatch = candidateMatches.find(
-                (candidateMatch) => candidateMatch.tokenCount === span
-            );
-            const selectedMatch =
-                exactTokenCountMatch ?? arrayFirst(candidateMatches);
-
-            if (!isDefined(selectedMatch)) {
-                continue;
-            }
-
-            segments.push(selectedMatch.canonical);
-            index += span;
-            isMatched = true;
-
-            break;
         }
 
-        if (isMatched) {
-            continue;
-        }
-
-        const currentWord = words[index];
-
-        if (!isDefined(currentWord)) {
-            index += 1;
-
-            continue;
-        }
-
-        const absoluteWordIndex = startWordIndex + index;
-
-        segments.push(
-            setHas(titleCaseSmallWords, currentWord) &&
-                absoluteWordIndex > 0 &&
-                absoluteWordIndex < totalWordCount - 1
-                ? currentWord
-                : capitalizeWord(currentWord)
-        );
-        index += 1;
+        index += dictionaryMatch?.tokenCount ?? 1;
     }
 
     return segments;
