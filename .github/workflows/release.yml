@@ -446,9 +446,15 @@ jobs:
               run: |
                   set -euo pipefail
                   expected_git_head=$(git rev-parse HEAD)
+                  git_head_metadata_path="${RUNNER_TEMP}/npm-view-git-head.json"
+                  published_git_head=""
 
                   for attempt in {1..12}; do
-                    published_git_head=$(npm view "${PACKAGE_NAME}@${VERSION}" gitHead --json 2>/dev/null | tr -d '"[:space:]' || true)
+                    published_git_head=""
+                    if npm view "${PACKAGE_NAME}@${VERSION}" gitHead --json > "$git_head_metadata_path" 2>/dev/null; then
+                      published_git_head=$(node scripts/read-npm-view-git-head.mjs "$git_head_metadata_path" 2>/dev/null || true)
+                    fi
+
                     if [ "$published_git_head" = "$expected_git_head" ]; then
                       exit 0
                     fi
