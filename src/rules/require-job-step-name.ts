@@ -114,8 +114,8 @@ const checkStepEntry = (
             messageId: "missingStepName",
             node: stepMapping,
             suggest:
-                !isDefined(suggestedStepName) ||
                 firstStepKeyNode === null ||
+                !isDefined(suggestedStepName) ||
                 !isDefined(firstStepKeyNode)
                     ? undefined
                     : buildInsertStepNameSuggest(
@@ -139,7 +139,7 @@ const checkStepEntry = (
             messageId: "invalidStepName",
             node: namePair.value ?? namePair,
             suggest:
-                !isDefined(suggestedStepName) || nameValueNode === null
+                nameValueNode === null || !isDefined(suggestedStepName)
                     ? undefined
                     : [
                           {

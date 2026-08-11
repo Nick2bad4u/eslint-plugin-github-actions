@@ -6,12 +6,11 @@
  * presets.
  */
 
-import { ESLint } from "eslint";
-import { existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+import { resolve } from "node:path";
 
-const builtPluginModuleUrl = new URL("../dist/plugin.js", import.meta.url);
-const builtPluginPath = fileURLToPath(builtPluginModuleUrl);
+const consumerRequire = createRequire(resolve(process.cwd(), "package.json"));
+const { ESLint } = consumerRequire("eslint");
 
 /**
  * Parse and validate a CLI-provided ESLint major version.
@@ -88,20 +87,14 @@ const getEslintMajorVersion = () => {
     return Number.parseInt(majorToken, 10);
 };
 
-/** Load the built plugin export from dist with clear diagnostics. */
-const loadBuiltPlugin = async () => {
-    if (!existsSync(builtPluginPath)) {
-        throw new TypeError(
-            `Missing built plugin at '${builtPluginPath}'. Run 'npm run build' before running compatibility smoke checks.`
-        );
-    }
-
-    const importedModule = await import("../dist/plugin.js");
+/** Load the plugin from the active consumer installation. */
+const loadInstalledPlugin = () => {
+    const importedModule = consumerRequire("eslint-plugin-github-actions-2");
     const plugin = importedModule.default ?? importedModule;
 
     if (plugin === undefined || plugin === null) {
         throw new TypeError(
-            `Failed to load built plugin export from '${builtPluginPath}'`
+            "Failed to load eslint-plugin-github-actions-2 from the active consumer installation."
         );
     }
 
@@ -170,7 +163,7 @@ const main = async () => {
         );
     }
 
-    const plugin = await loadBuiltPlugin();
+    const plugin = loadInstalledPlugin();
 
     const smokeCases = [
         {

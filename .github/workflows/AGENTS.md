@@ -63,11 +63,17 @@ jobs:
      uses: actions/setup-node@v6
      with:
       node-version-file: .node-version
-      cache: npm
-      cache-dependency-path: package-lock.json
-   - name: Install dependencies
+      package-manager-cache: false
+   - name: Install repository npm version
+     working-directory: ${{ runner.temp }}
+     env:
+      REPOSITORY_PACKAGE_JSON: ${{ github.workspace }}/package.json
      run: |
-      npm ci --force
+      npm_version=$(node -p "require(process.env.REPOSITORY_PACKAGE_JSON).packageManager.replace(/^npm@/, '')")
+      npm install --global "npm@${npm_version}"
+      test "$(npm --version)" = "$npm_version"
+   - name: Install dependencies
+     run: npm ci
    - name: Verify package
      run: npm run release:check
    - name: Pack tarball
@@ -247,19 +253,25 @@ jobs:
   - **Restore Keys:** Use `restore-keys` for fallbacks to older, compatible caches.
   - **Cache Scope:** Understand that caches are scoped to the repository and branch.
 - **Guidance for Copilot:**
-  - In this npm repository, prefer `actions/setup-node` with `node-version-file: .node-version` and `cache: npm` before reaching for a custom `actions/cache` block.
+  - In this npm 12 repository, disable `actions/setup-node`'s automatic package-manager cache so the action does not invoke the runner's bundled npm before the repository-pinned npm is installed.
+  - Install the exact top-level `packageManager` version from the runner's temporary directory before running any repository-scoped npm command.
   - Treat `.node-version` as the workflow source of truth and keep `.nvmrc` synchronized with the same exact version for local tooling compatibility.
-  - Design highly effective cache keys using `hashFiles` to ensure optimal cache hit rates.
-  - Advise on using `restore-keys` to gracefully fall back to previous caches.
-- **Example (Repository-aligned npm caching):**
+- **Example (Repository-aligned npm bootstrap):**
 
 ```yaml
 - name: Setup Node.js
   uses: actions/setup-node@v6
   with:
    node-version-file: .node-version
-   cache: npm
-   cache-dependency-path: package-lock.json
+   package-manager-cache: false
+- name: Install repository npm version
+  working-directory: ${{ runner.temp }}
+  env:
+   REPOSITORY_PACKAGE_JSON: ${{ github.workspace }}/package.json
+  run: |
+   npm_version=$(node -p "require(process.env.REPOSITORY_PACKAGE_JSON).packageManager.replace(/^npm@/, '')")
+   npm install --global "npm@${npm_version}"
+   test "$(npm --version)" = "$npm_version"
 ```
 
 ### **2. Matrix Strategies for Parallelization**
@@ -298,17 +310,34 @@ jobs:
      uses: actions/setup-node@v6
      with:
       node-version-file: .node-version
-      cache: npm
-      cache-dependency-path: package-lock.json
+      package-manager-cache: false
+
+   - name: Install repository npm version
+     working-directory: ${{ runner.temp }}
+     env:
+      REPOSITORY_PACKAGE_JSON: ${{ github.workspace }}/package.json
+     run: |
+      npm_version=$(node -p "require(process.env.REPOSITORY_PACKAGE_JSON).packageManager.replace(/^npm@/, '')")
+      npm install --global "npm@${npm_version}"
+      test "$(npm --version)" = "$npm_version"
 
    - name: Install dependencies
-     run: npm ci --force
+     run: npm ci
 
-   - name: Install ESLint
-     run: npm install --no-save --force eslint@${{ matrix.eslint-version }} @eslint/js@${{ matrix.eslint-version }}
+   - name: Pack plugin
+     run: |
+      mkdir -p temp/eslint9-consumer
+      npm pack --pack-destination temp/eslint9-consumer
+
+   - name: Install isolated ESLint consumer
+     working-directory: temp/eslint9-consumer
+     run: |
+      npm init --yes
+      npm install "eslint@${{ matrix.eslint-version }}" ./*.tgz
 
    - name: Run compat lint
-     run: npm run lint:compat:eslint9 -- --expect-eslint-major=9
+     working-directory: temp/eslint9-consumer
+     run: node ../../scripts/lint-compat-eslint9.mjs --expect-eslint-major=9
 ```
 
 ### **3. Self-Hosted Runners**

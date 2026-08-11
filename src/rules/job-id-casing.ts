@@ -64,7 +64,7 @@ const normalizeJobIdCasingOptions = (
     allowedCasings: readonly GithubActionsNonTitleCasingKind[];
     ignoredJobIds: readonly string[];
 } => {
-    if (!isDefined(option) || typeof option === "string") {
+    if (typeof option === "string" || !isDefined(option)) {
         return {
             allowedCasings: [option ?? DEFAULT_JOB_ID_CASING],
             ignoredJobIds: [],

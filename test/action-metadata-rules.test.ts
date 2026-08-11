@@ -29,58 +29,30 @@ describe("action metadata rules", () => {
         expect(result.messages).toHaveLength(0);
     });
 
-    it("prefers action.yml over action.yaml", async () => {
-        expect.hasAssertions();
-
-        const result = await lintWorkflow(
-            [
-                "name: Example",
-                "description: Example action",
-                "runs:",
-                "  using: composite",
-                "  steps:",
-                "    - run: echo hi",
-                "      shell: bash",
-            ].join("\n"),
-            {
-                configName: "actionMetadata",
-                filePath: ".github/actions/example/action.yaml",
-                rules: {
-                    "github-actions/prefer-action-yml": "error",
-                },
-            }
-        );
-
-        expect(result.messages).toHaveLength(1);
-    });
-
-    it("accepts action.yml metadata filenames", async () => {
-        expect.hasAssertions();
-
-        const result = await lintWorkflow(
-            [
-                "name: Example",
-                "description: Example action",
-                "runs:",
-                "  using: composite",
-                "  steps:",
+    it.each([
+        {
+            expectedMessageCount: 1,
+            filePath: ".github/actions/example/action.yaml",
+            name: "prefers action.yml over action.yaml",
+            stepLines: ["    - run: echo hi", "      shell: bash"],
+        },
+        {
+            expectedMessageCount: 0,
+            filePath: ".github/actions/example/action.yml",
+            name: "accepts action.yml metadata filenames",
+            stepLines: [
                 "    - name: Echo",
                 "      run: echo hi",
                 "      shell: bash",
-            ].join("\n"),
-            {
-                configName: "actionMetadata",
-                filePath: ".github/actions/example/action.yml",
-                rules: {
-                    "github-actions/prefer-action-yml": "error",
-                },
-            }
-        );
-
-        expect(result.messages).toHaveLength(0);
-    });
-
-    it("reports action.yaml metadata filenames regardless of extension casing", async () => {
+            ],
+        },
+        {
+            expectedMessageCount: 1,
+            filePath: ".github/actions/example/action.YAML",
+            name: "reports action.yaml filenames regardless of extension casing",
+            stepLines: ["    - run: echo hi", "      shell: bash"],
+        },
+    ])("$name", async ({ expectedMessageCount, filePath, stepLines }) => {
         expect.hasAssertions();
 
         const result = await lintWorkflow(
@@ -90,19 +62,18 @@ describe("action metadata rules", () => {
                 "runs:",
                 "  using: composite",
                 "  steps:",
-                "    - run: echo hi",
-                "      shell: bash",
+                ...stepLines,
             ].join("\n"),
             {
                 configName: "actionMetadata",
-                filePath: ".github/actions/example/action.YAML",
+                filePath,
                 rules: {
                     "github-actions/prefer-action-yml": "error",
                 },
             }
         );
 
-        expect(result.messages).toHaveLength(1);
+        expect(result.messages).toHaveLength(expectedMessageCount);
     });
 
     it("reports deprecated node runtimes", async () => {

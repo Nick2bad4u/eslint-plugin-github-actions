@@ -71,8 +71,8 @@ const rule: Rule.RuleModule = {
                     }
 
                     if (
-                        isLocalActionReference(usesReference) &&
-                        !hasSeenCheckout
+                        !hasSeenCheckout &&
+                        isLocalActionReference(usesReference)
                     ) {
                         reportYamlNode(context, {
                             data: {

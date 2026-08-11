@@ -53,7 +53,7 @@ const rule: Rule.RuleModule = {
 
                 if (
                     failFastValue?.type === "YAMLScalar" &&
-                    (failFastValue.value === false || failFastText === "false")
+                    (failFastText === "false" || failFastValue.value === false)
                 ) {
                     reportYamlNode(context, {
                         data: {

@@ -1,12 +1,18 @@
 # Maintainer quickstart
 
-This quickstart assumes Node 22+ and npm 11+.
+Use the exact Node.js version in `.node-version` and the exact npm version in
+the root `packageManager` field. The repository currently requires npm 12 and
+rejects mismatched package-manager versions.
 
 ## 1) Install dependencies
 
 ```sh
-npm install
+npm ci
 ```
+
+The tracked `.npmrc` blocks dependency install scripts by default. Required
+native/toolchain scripts are reviewed and pinned in the root `allowScripts`
+map; do not bypass that policy with `--force` or script-enabling flags.
 
 ## 2) Build the plugin once
 

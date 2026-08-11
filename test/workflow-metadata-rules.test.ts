@@ -21,59 +21,41 @@ describe("workflow metadata rules", () => {
         );
     });
 
-    it("accepts workflows with a non-empty name", async () => {
-        expect.hasAssertions();
-
-        const result = await lintWorkflow(
-            [
+    it.each([
+        {
+            code: [
                 "name: CI",
                 "on:",
                 "  push:",
             ].join("\n"),
-            {
-                rules: {
-                    "github-actions/require-action-name": "error",
-                },
-            }
-        );
-
-        expect(result.messages).toHaveLength(0);
-    });
-
-    it("reports non-scalar workflow names", async () => {
-        expect.hasAssertions();
-
-        const result = await lintWorkflow(
-            [
+            expectedRuleIds: [],
+            name: "accepts workflows with a non-empty name",
+        },
+        {
+            code: [
                 "name: []",
                 "on:",
                 "  push:",
             ].join("\n"),
-            {
-                rules: {
-                    "github-actions/require-action-name": "error",
-                },
-            }
-        );
-
-        expect(result.messages).toHaveLength(1);
-        expect(result.messages[0]?.ruleId).toBe(
-            "github-actions/require-action-name"
-        );
-    });
-
-    it("reports workflows whose YAML root is not a mapping", async () => {
+            expectedRuleIds: ["github-actions/require-action-name"],
+            name: "reports non-scalar workflow names",
+        },
+        {
+            code: "- push",
+            expectedRuleIds: ["github-actions/require-action-name"],
+            name: "reports workflows whose YAML root is not a mapping",
+        },
+    ])("$name", async ({ code, expectedRuleIds }) => {
         expect.hasAssertions();
 
-        const result = await lintWorkflow("- push", {
+        const result = await lintWorkflow(code, {
             rules: {
                 "github-actions/require-action-name": "error",
             },
         });
 
-        expect(result.messages).toHaveLength(1);
-        expect(result.messages[0]?.ruleId).toBe(
-            "github-actions/require-action-name"
+        expect(result.messages.map(({ ruleId }) => ruleId)).toStrictEqual(
+            expectedRuleIds
         );
     });
 
@@ -119,56 +101,33 @@ describe("workflow metadata rules", () => {
         expect(result.messages).toHaveLength(0);
     });
 
-    it("reports blank workflow run-name values", async () => {
-        expect.hasAssertions();
-
-        const result = await lintWorkflow(
-            [
+    it.each([
+        {
+            code: [
                 "name: Release",
                 "run-name: '   '",
                 "on:",
                 "  workflow_dispatch:",
             ].join("\n"),
-            {
-                rules: {
-                    "github-actions/require-action-run-name": "error",
-                },
-            }
-        );
-
-        expect(result.messages).toHaveLength(1);
-        expect(result.messages[0]?.ruleId).toBe(
-            "github-actions/require-action-run-name"
-        );
-    });
-
-    it("reports non-scalar workflow run-name values", async () => {
-        expect.hasAssertions();
-
-        const result = await lintWorkflow(
-            [
+            name: "reports blank workflow run-name values",
+        },
+        {
+            code: [
                 "name: Release",
                 "run-name: {}",
                 "on:",
                 "  workflow_dispatch:",
             ].join("\n"),
-            {
-                rules: {
-                    "github-actions/require-action-run-name": "error",
-                },
-            }
-        );
-
-        expect(result.messages).toHaveLength(1);
-        expect(result.messages[0]?.ruleId).toBe(
-            "github-actions/require-action-run-name"
-        );
-    });
-
-    it("reports missing run-name for non-mapping workflow roots", async () => {
+            name: "reports non-scalar workflow run-name values",
+        },
+        {
+            code: "- workflow_dispatch",
+            name: "reports missing run-name for non-mapping workflow roots",
+        },
+    ])("$name", async ({ code }) => {
         expect.hasAssertions();
 
-        const result = await lintWorkflow("- workflow_dispatch", {
+        const result = await lintWorkflow(code, {
             rules: {
                 "github-actions/require-action-run-name": "error",
             },
@@ -329,12 +288,28 @@ describe("workflow metadata rules", () => {
         );
     });
 
-    it("autofixes names when a single target casing is configured", async () => {
+    it.each([
+        {
+            inputName: "release pipeline",
+            name: "autofixes names when a single target casing is configured",
+            outputName: "Release Pipeline",
+        },
+        {
+            inputName: "git hub actions http api",
+            name: "autofixes known case-police words in title casing",
+            outputName: "GitHub Actions HTTP API",
+        },
+        {
+            inputName: "build and test ai & api",
+            name: "autofixes names with small words, ampersands, and acronyms",
+            outputName: "Build and Test AI & API",
+        },
+    ])("$name", async ({ inputName, outputName }) => {
         expect.hasAssertions();
 
         const result = await lintWorkflow(
             [
-                "name: release pipeline",
+                `name: ${inputName}`,
                 "on:",
                 "  push:",
             ].join("\n"),
@@ -349,53 +324,7 @@ describe("workflow metadata rules", () => {
             }
         );
 
-        expect(result.output).toContain("name: Release Pipeline");
-    });
-
-    it("autofixes known case-police words in title casing", async () => {
-        expect.hasAssertions();
-
-        const result = await lintWorkflow(
-            [
-                "name: git hub actions http api",
-                "on:",
-                "  push:",
-            ].join("\n"),
-            {
-                fix: true,
-                rules: {
-                    "github-actions/action-name-casing": [
-                        "error",
-                        "Title Case",
-                    ],
-                },
-            }
-        );
-
-        expect(result.output).toContain("name: GitHub Actions HTTP API");
-    });
-
-    it("autofixes workflow names to title case with small words, ampersands, and acronyms", async () => {
-        expect.hasAssertions();
-
-        const result = await lintWorkflow(
-            [
-                "name: build and test ai & api",
-                "on:",
-                "  push:",
-            ].join("\n"),
-            {
-                fix: true,
-                rules: {
-                    "github-actions/action-name-casing": [
-                        "error",
-                        "Title Case",
-                    ],
-                },
-            }
-        );
-
-        expect(result.output).toContain("name: Build and Test AI & API");
+        expect(result.output).toContain(`name: ${outputName}`);
     });
 
     it("reports invalid workflow trigger events", async () => {

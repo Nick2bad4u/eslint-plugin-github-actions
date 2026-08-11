@@ -79,42 +79,23 @@ describe("workflow shape rules", () => {
         expect(result.messages).toHaveLength(2);
     });
 
-    it("ignores no-external-job when workflows define no jobs", async () => {
-        expect.hasAssertions();
-
-        const result = await lintWorkflow(
-            [
+    it.each([
+        {
+            code: [
                 "name: Release",
                 "on:",
                 "  workflow_dispatch:",
             ].join("\n"),
-            {
-                rules: {
-                    "github-actions/no-external-job": "error",
-                },
-            }
-        );
-
-        expect(result.messages).toHaveLength(0);
-    });
-
-    it("ignores no-external-job when workflow root is not a mapping", async () => {
-        expect.hasAssertions();
-
-        const result = await lintWorkflow("- deploy", {
-            rules: {
-                "github-actions/no-external-job": "error",
-            },
-        });
-
-        expect(result.messages).toHaveLength(0);
-    });
-
-    it("reports external jobs even when uses has an empty value", async () => {
-        expect.hasAssertions();
-
-        const result = await lintWorkflow(
-            [
+            expectedMessageCount: 0,
+            name: "ignores workflows that define no jobs",
+        },
+        {
+            code: "- deploy",
+            expectedMessageCount: 0,
+            name: "ignores workflows whose root is not a mapping",
+        },
+        {
+            code: [
                 "name: Release",
                 "on:",
                 "  workflow_dispatch:",
@@ -122,14 +103,19 @@ describe("workflow shape rules", () => {
                 "  deploy:",
                 "    uses:",
             ].join("\n"),
-            {
-                rules: {
-                    "github-actions/no-external-job": "error",
-                },
-            }
-        );
+            expectedMessageCount: 1,
+            name: "reports external jobs with an empty uses value",
+        },
+    ])("$name", async ({ code, expectedMessageCount }) => {
+        expect.hasAssertions();
 
-        expect(result.messages).toHaveLength(1);
+        const result = await lintWorkflow(code, {
+            rules: {
+                "github-actions/no-external-job": "error",
+            },
+        });
+
+        expect(result.messages).toHaveLength(expectedMessageCount);
     });
 
     it("reports top-level workflow env", async () => {

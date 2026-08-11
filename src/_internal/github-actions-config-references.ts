@@ -139,4 +139,4 @@ export const githubActionsConfigMetadataByName: Readonly<
         icon: "🧱",
         presetName: "github-actions:workflow-templates",
     },
-} as const;
+};
