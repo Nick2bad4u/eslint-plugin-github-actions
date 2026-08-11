@@ -309,6 +309,11 @@ describe("workflow metadata rules", () => {
             name: "autofixes acronym-to-word and camel-case boundaries",
             outputName: "XML HTTP Request Validation",
         },
+        {
+            inputName: "& release pipeline",
+            name: "autofixes names that begin with a preserved symbol",
+            outputName: "& Release Pipeline",
+        },
     ])("$name", async ({ inputName, outputName }) => {
         expect.hasAssertions();
 
