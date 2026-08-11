@@ -109,14 +109,34 @@ jobs:
                   ref: "${{ steps.target_ref.outputs.ref }}"
                   token: "${{ secrets.GITHUB_TOKEN }}"
 
-            - name: "Verify checkout matches triggering commit"
+            - name: "Record release source state"
+              id: "source_state"
+              env:
+                  EVENT_SHA: "${{ github.sha }}"
               run: |
                   set -euo pipefail
                   checked_out_sha=$(git rev-parse HEAD)
-                  if [ "$checked_out_sha" != "$GITHUB_SHA" ]; then
-                    echo "::error::The selected ref now resolves to ${checked_out_sha}, but this workflow run was triggered at ${GITHUB_SHA}. Start a new dispatch so npm provenance identifies the code being published." >&2
-                    exit 1
+                  recovery=false
+
+                  if [ "$checked_out_sha" != "$EVENT_SHA" ]; then
+                    if [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+                      echo "::error::The checked-out commit ${checked_out_sha} does not match the triggering commit ${EVENT_SHA}." >&2
+                      exit 1
+                    fi
+
+                    checked_out_parent=$(git rev-parse HEAD^)
+                    if [ "$checked_out_parent" != "$EVENT_SHA" ]; then
+                      echo "::error::The selected ref now resolves to ${checked_out_sha}, which is not a direct release commit on triggering commit ${EVENT_SHA}. Start a new dispatch so npm provenance identifies the code being published." >&2
+                      exit 1
+                    fi
+
+                    recovery=true
                   fi
+
+                  {
+                    echo "checked_out_sha=$checked_out_sha"
+                    echo "recovery=$recovery"
+                  } >> "$GITHUB_OUTPUT"
 
             - name: "Setup Node.js"
               uses: "actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e" # v6.4.0
@@ -143,6 +163,18 @@ jobs:
 
             - name: "Install dependencies"
               run: "npm ci"
+
+            - name: "Validate release recovery state"
+              if: "github.event_name == 'workflow_dispatch' && steps.source_state.outputs.recovery == 'true'"
+              env:
+                  EXPLICIT_VERSION: "${{ inputs.version }}"
+                  RELEASE_TYPE: "${{ inputs.release_type }}"
+              run: |
+                  set -euo pipefail
+                  node scripts/validate-release-recovery.mjs \
+                    --candidate-sha "$GITHUB_SHA" \
+                    --explicit-version "${EXPLICIT_VERSION:-}" \
+                    --release-type "${RELEASE_TYPE:-patch}"
 
             - name: "Install native lint tools"
               run: |
@@ -226,7 +258,9 @@ jobs:
               run: |
                   set -euo pipefail
 
-                  if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+                  if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ steps.source_state.outputs.recovery }}" = "true" ]; then
+                    version=$(node -p "require('./package.json').version")
+                  elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
                     explicit_version="${EXPLICIT_VERSION:-}"
                     if [ -n "$explicit_version" ]; then
                       npm version "$explicit_version" --no-git-tag-version
@@ -255,7 +289,7 @@ jobs:
                   } >> "$GITHUB_OUTPUT"
 
             - name: "Rebuild package after manual version bump"
-              if: "github.event_name == 'workflow_dispatch'"
+              if: "github.event_name == 'workflow_dispatch' && steps.source_state.outputs.recovery != 'true'"
               run: "npm run build"
 
             - name: "Check whether version is already published"
@@ -274,15 +308,15 @@ jobs:
                   fi
 
             - name: "Prevent duplicate workflow_dispatch release version"
-              if: "github.event_name == 'workflow_dispatch' && steps.npm_check.outputs.already_published == 'true'"
+              if: "github.event_name == 'workflow_dispatch' && steps.source_state.outputs.recovery != 'true' && steps.npm_check.outputs.already_published == 'true'"
               env:
                   VERSION: "${{ steps.version.outputs.version }}"
               run: |
                   echo "Version ${VERSION} is already published. Choose a new release type/version." >&2
                   exit 1
 
-            - name: "Commit and push release version + tag"
-              if: "github.event_name == 'workflow_dispatch'"
+            - name: "Commit and push release version"
+              if: "github.event_name == 'workflow_dispatch' && steps.source_state.outputs.recovery != 'true'"
               env:
                   BRANCH: "${{ steps.target_ref.outputs.branch }}"
                   TAG: "${{ steps.version.outputs.tag }}"
@@ -301,8 +335,26 @@ jobs:
                   fi
 
                   git commit -m "chore: release ${TAG}"
-                  git tag -a "$TAG" -m "$TAG"
                   git push origin "HEAD:${BRANCH}"
+
+            - name: "Create and push release tag"
+              if: "github.event_name == 'workflow_dispatch'"
+              env:
+                  TAG: "${{ steps.version.outputs.tag }}"
+              run: |
+                  set -euo pipefail
+
+                  if git rev-parse "$TAG" >/dev/null 2>&1; then
+                    tag_commit=$(git rev-parse "${TAG}^{commit}")
+                    head_commit=$(git rev-parse HEAD)
+                    if [ "$tag_commit" != "$head_commit" ]; then
+                      echo "::error::Tag ${TAG} points to ${tag_commit}, but HEAD is ${head_commit}." >&2
+                      exit 1
+                    fi
+                  else
+                    git tag -a "$TAG" -m "$TAG"
+                  fi
+
                   git push origin "$TAG"
 
             - name: "Generate release notes from git-cliff"
@@ -472,6 +524,8 @@ jobs:
                     echo "- Actor: @${{ github.actor }}"
                     echo "- Ref: \`${{ steps.target_ref.outputs.ref }}\`"
                     echo "- Source branch: \`${{ steps.target_ref.outputs.branch }}\`"
+                    echo "- Checked-out SHA: \`${{ steps.source_state.outputs.checked_out_sha }}\`"
+                    echo "- Recovery run: \`${{ steps.source_state.outputs.recovery }}\`"
                     echo "- Package: \`${{ steps.version.outputs.package_name }}\`"
                     echo "- Version: \`${{ steps.version.outputs.version }}\`"
                     echo "- Tag: \`${{ steps.version.outputs.tag }}\`"
