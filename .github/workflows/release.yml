@@ -109,6 +109,15 @@ jobs:
                   ref: "${{ steps.target_ref.outputs.ref }}"
                   token: "${{ secrets.GITHUB_TOKEN }}"
 
+            - name: "Verify checkout matches triggering commit"
+              run: |
+                  set -euo pipefail
+                  checked_out_sha=$(git rev-parse HEAD)
+                  if [ "$checked_out_sha" != "$GITHUB_SHA" ]; then
+                    echo "::error::The selected ref now resolves to ${checked_out_sha}, but this workflow run was triggered at ${GITHUB_SHA}. Start a new dispatch so npm provenance identifies the code being published." >&2
+                    exit 1
+                  fi
+
             - name: "Setup Node.js"
               uses: "actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e" # v6.4.0
               with:
@@ -344,9 +353,22 @@ jobs:
 
                   assets_dir="${RELEASE_ASSETS_DIR}"
                   pack_metadata_path="${assets_dir}/npm-pack.json"
+                  package_json_backup="${RUNNER_TEMP}/package.json.before-release-pack"
+                  release_commit=$(git rev-parse HEAD)
                   mkdir -p "$assets_dir"
 
+                  cp package.json "$package_json_backup"
+                  restore_package_json() {
+                    cp "$package_json_backup" package.json
+                  }
+                  trap restore_package_json EXIT
+
+                  npm pkg set "gitHead=${release_commit}"
                   npm pack --json --pack-destination "$assets_dir" > "$pack_metadata_path"
+
+                  restore_package_json
+                  trap - EXIT
+                  git diff --exit-code -- package.json
 
                   tarball_filename=$(node scripts/read-npm-pack-filename.mjs "$pack_metadata_path")
                   tarball_path="${assets_dir}/${tarball_filename}"
@@ -363,6 +385,29 @@ jobs:
                   TARBALL_PATH: "${{ steps.release_package.outputs.tarball_path }}"
               run: |
                   npm publish "$TARBALL_PATH" --access public --provenance --ignore-scripts
+
+            - name: "Verify published npm gitHead"
+              if: "steps.npm_check.outputs.already_published != 'true'"
+              env:
+                  PACKAGE_NAME: "${{ steps.version.outputs.package_name }}"
+                  VERSION: "${{ steps.version.outputs.version }}"
+              run: |
+                  set -euo pipefail
+                  expected_git_head=$(git rev-parse HEAD)
+
+                  for attempt in {1..12}; do
+                    published_git_head=$(npm view "${PACKAGE_NAME}@${VERSION}" gitHead --json 2>/dev/null | tr -d '"[:space:]' || true)
+                    if [ "$published_git_head" = "$expected_git_head" ]; then
+                      exit 0
+                    fi
+
+                    if [ "$attempt" -lt 12 ]; then
+                      sleep 5
+                    fi
+                  done
+
+                  echo "::error::npm gitHead '${published_git_head:-<missing>}' does not match release commit '${expected_git_head}'." >&2
+                  exit 1
 
             - name: "Create release archives"
               id: "release_assets"
