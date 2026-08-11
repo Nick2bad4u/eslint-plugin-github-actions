@@ -1,6 +1,20 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import githubActionsPlugin from "../src/plugin.js";
+
+const packageJson: unknown = JSON.parse(
+    readFileSync(new URL("../package.json", import.meta.url), "utf8")
+);
+
+if (
+    typeof packageJson !== "object" ||
+    packageJson === null ||
+    !("version" in packageJson) ||
+    typeof packageJson.version !== "string"
+) {
+    throw new TypeError("Expected package.json to contain a string version.");
+}
 
 describe("plugin entry", () => {
     it("exports GitHub Actions plugin metadata", () => {
@@ -8,6 +22,7 @@ describe("plugin entry", () => {
         expect(githubActionsPlugin.meta).toMatchObject({
             name: "eslint-plugin-github-actions-2",
             namespace: "github-actions",
+            version: packageJson.version,
         });
     });
 

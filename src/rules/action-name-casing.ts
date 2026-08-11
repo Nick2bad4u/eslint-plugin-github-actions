@@ -87,7 +87,7 @@ const normalizeActionNameCasingOptions = (
     allowedCasings: readonly GithubActionsCasingKind[];
     ignoredNames: readonly string[];
 } => {
-    if (!isDefined(option) || typeof option === "string") {
+    if (typeof option === "string" || !isDefined(option)) {
         return {
             allowedCasings: [option ?? DEFAULT_ACTION_NAME_CASING],
             ignoredNames: [],
@@ -136,9 +136,9 @@ const rule: Rule.RuleModule = {
                 const nameValue = getScalarStringValue(nameNode);
 
                 if (
+                    nameValue === null ||
                     namePair === null ||
                     nameNode?.type !== "YAMLScalar" ||
-                    nameValue === null ||
                     nameValue.trim().length === 0 ||
                     arrayIncludes(ignoredNames, nameValue)
                 ) {

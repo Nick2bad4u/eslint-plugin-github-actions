@@ -21,7 +21,7 @@ export interface DependencyReviewActionStep {
 export const isDependencyReviewActionReference = (
     usesReference: string
 ): boolean =>
-    usesReference.trim().startsWith("actions/dependency-review-action@");
+    usesReference.trimStart().startsWith("actions/dependency-review-action@");
 
 /** Collect all workflow steps that use the dependency review action. */
 export const getDependencyReviewActionSteps = (

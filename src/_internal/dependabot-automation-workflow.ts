@@ -22,7 +22,8 @@ import {
  */
 export const isDependabotFetchMetadataReference = (
     usesReference: string
-): boolean => usesReference.trim().startsWith("dependabot/fetch-metadata@");
+): boolean =>
+    usesReference.trimStart().startsWith("dependabot/fetch-metadata@");
 
 /** Determine whether a run step edits a pull request via `gh pr edit`. */
 export const isGhPrEditRunScript = (runScript: string): boolean =>

@@ -51,9 +51,9 @@ const rule: Rule.RuleModule = {
                 messageId: "iconNameContainsPathSeparator",
                 node: iconNameNode ?? node,
                 suggest:
+                    iconNameNode === null ||
                     !isDefined(suggestedIconName) ||
-                    suggestedIconName.length === 0 ||
-                    iconNameNode === null
+                    suggestedIconName.length === 0
                         ? undefined
                         : [
                               {

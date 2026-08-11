@@ -74,7 +74,7 @@ const normalizeStepUsesStyleOptions = (
     allowRepository: boolean;
     ignoredReferences: readonly string[];
 } => {
-    if (!isDefined(option) || typeof option === "string") {
+    if (typeof option === "string" || !isDefined(option)) {
         return {
             allowDocker: false,
             allowedStyles: [option ?? DEFAULT_STEP_USES_STYLE],

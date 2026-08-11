@@ -71,7 +71,7 @@ const normalizePreferFileExtensionOptions = (
     caseSensitive: boolean;
     extension: WorkflowFileExtension;
 } => {
-    if (!isDefined(option) || typeof option === "string") {
+    if (typeof option === "string" || !isDefined(option)) {
         return {
             caseSensitive: true,
             extension: option ?? DEFAULT_WORKFLOW_FILE_EXTENSION,

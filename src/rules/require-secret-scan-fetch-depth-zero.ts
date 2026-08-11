@@ -19,7 +19,7 @@ import {
 } from "../_internal/workflow-yaml.js";
 
 const isCheckoutReference = (usesReference: string): boolean =>
-    usesReference.trim().startsWith("actions/checkout@");
+    usesReference.trimStart().startsWith("actions/checkout@");
 
 /**
  * Determine whether a step entry is a compliant `actions/checkout` with

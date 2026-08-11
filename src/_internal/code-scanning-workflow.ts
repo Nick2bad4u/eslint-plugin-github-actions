@@ -54,7 +54,7 @@ export const isSarifUploadReference = (usesReference: string): boolean =>
 
 /** Determine whether a `uses` reference points to the Scorecard action. */
 export const isScorecardActionReference = (usesReference: string): boolean =>
-    usesReference.trim().startsWith("ossf/scorecard-action@");
+    usesReference.trimStart().startsWith("ossf/scorecard-action@");
 
 /** Collect all CodeQL init steps in a workflow. */
 export const getCodeqlInitSteps = (

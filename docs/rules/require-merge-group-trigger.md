@@ -64,4 +64,3 @@ You can disable this rule when its policy does not match your repository standar
 ## Further reading
 
 - [https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#merge_group](https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#merge_group)
-- [https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onmerge_grouptypes](https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onmerge_grouptypes)

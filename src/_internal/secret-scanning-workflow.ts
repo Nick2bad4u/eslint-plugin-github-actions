@@ -11,11 +11,11 @@ import { getWorkflowActionSteps } from "./workflow-action-steps.js";
 
 /** Determine whether a `uses` reference points to the Gitleaks action. */
 export const isGitleaksActionReference = (usesReference: string): boolean =>
-    usesReference.trim().startsWith("gitleaks/gitleaks-action@");
+    usesReference.trimStart().startsWith("gitleaks/gitleaks-action@");
 
 /** Determine whether a `uses` reference points to the TruffleHog action. */
 export const isTrufflehogActionReference = (usesReference: string): boolean =>
-    usesReference.trim().startsWith("trufflesecurity/trufflehog@");
+    usesReference.trimStart().startsWith("trufflesecurity/trufflehog@");
 
 /**
  * Determine whether a `uses` reference points to a supported secret scanning

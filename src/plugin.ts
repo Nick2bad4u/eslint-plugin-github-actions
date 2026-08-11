@@ -16,6 +16,7 @@ import * as yamlParser from "yaml-eslint-parser";
 
 import type { GithubActionsRuleDocs } from "./_internal/rule-docs.js";
 
+import packageJson from "../package.json" with { type: "json" };
 import {
     githubActionsConfigMetadataByName,
     type GithubActionsConfigName,
@@ -26,7 +27,7 @@ import { githubActionsRules } from "./_internal/rules-registry.js";
 
 /** ESLint severity used by generated preset rule maps. */
 const ERROR_SEVERITY = "error" as const;
-const PLUGIN_VERSION = "1.1.3";
+const PLUGIN_VERSION = packageJson.version;
 
 /** Runtime type for the plugin's generated config presets. */
 export type GithubActionsConfigs = Record<

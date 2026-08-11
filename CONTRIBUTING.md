@@ -4,7 +4,8 @@ Thanks for contributing. This project focuses on ESLint rules, presets, docs, an
 
 ## Development
 
-1. Install dependencies with `npm install`.
+1. Use the exact Node.js and npm versions pinned by `.node-version` and the root
+   `packageManager` field, then install dependencies with `npm ci`.
 2. Run `npm run typecheck` to validate TypeScript.
 3. Run `npm test` to execute the Vitest suite.
 4. Run `npm run build` before opening a PR when you change published runtime files.
