@@ -4,6 +4,8 @@
 
 ESLint plugin for GitHub Actions quality, reliability, security, and maintainability across the full GitHub Actions ecosystem.
 
+> **Oxlint:** Not compatible as a complete plugin (verified with Oxlint 1.80.0); all 115 rules and every preset require GitHub Actions YAML or metadata parsing through `yaml-eslint-parser`, and [Oxlint JavaScript plugins do not support custom parsers](https://oxc.rs/docs/guide/usage/linter/js-plugins.html#api-support), so use ESLint for this plugin.
+
 The plugin covers:
 
 - workflow YAML files (`.github/workflows/*.{yml,yaml}`)
